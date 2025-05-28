@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Plus, Grid3X3, Type, Image, Button as ButtonIcon, Bell, BarChart3 } from 'lucide-react';
+import { Search, Plus, Grid3X3, Type, Image, Square as ButtonIcon, Bell, BarChart3 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 const ModuleSidebar = ({ onModuleDrop, projectType }) => {
