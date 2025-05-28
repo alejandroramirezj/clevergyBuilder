@@ -116,41 +116,49 @@ const ClervergyModules = ({ module, preview = false }) => {
         );
 
       case 'energy-prices':
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <span>⚡ Precios de Energía</span>
-                <Badge className="bg-yellow-500 text-white">En Vivo</Badge>
-              </CardTitle>
-              <CardDescription>
-                Microfrontend de Clevergy que muestra precios de energía en tiempo real.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg">
-                    <div className="text-sm text-gray-600">Precio Actual</div>
-                    <div className="text-2xl font-bold text-orange-600">€0.15/kWh</div>
+        if (preview) {
+          // En modo preview, renderizamos el web component real de Clevergy
+          return (
+            <div className="w-full">
+              <clevergy-energy-prices data-show-energy-price-surplus="true"></clevergy-energy-prices>
+            </div>
+          );
+        } else {
+          // En modo edición, mostramos una representación visual
+          return (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <span>⚡ Precios de Energía</span>
+                  <Badge className="bg-yellow-500 text-white">En Vivo</Badge>
+                </CardTitle>
+                <CardDescription>
+                  Microfrontend de Clevergy que muestra precios de energía en tiempo real.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg">
+                      <div className="text-sm text-gray-600">Precio Actual</div>
+                      <div className="text-2xl font-bold text-orange-600">€0.15/kWh</div>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg">
+                      <div className="text-sm text-gray-600">Próxima Hora</div>
+                      <div className="text-2xl font-bold text-green-600">€0.12/kWh</div>
+                    </div>
                   </div>
-                  <div className="p-4 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg">
-                    <div className="text-sm text-gray-600">Próxima Hora</div>
-                    <div className="text-2xl font-bold text-green-600">€0.12/kWh</div>
+                  <div className="h-32 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-medium">📈 Gráfico de Precios 24h</span>
                   </div>
-                </div>
-                <div className="h-32 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-medium">📈 Gráfico de Precios 24h</span>
-                </div>
-                {!preview && (
                   <p className="text-sm text-gray-600">
-                    Este componente se renderiza como {'<clevergy-energy-prices />'} en el HTML final.
+                    Este componente se renderiza como {'<clevergy-energy-prices data-show-energy-price-surplus="true" />'} en el HTML final.
                   </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        );
+                </div>
+              </CardContent>
+            </Card>
+          );
+        }
 
       default:
         return (
