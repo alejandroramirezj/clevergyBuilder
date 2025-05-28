@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,23 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
 
 const ClervergyModules = ({ module, preview = false }) => {
+  const energyPricesRef = useRef(null);
+
+  useEffect(() => {
+    if (preview && module.id === 'energy-prices' && energyPricesRef.current) {
+      console.log('Clevergy energy prices component mounted in preview mode');
+      // Verificar si el web component está disponible
+      if (customElements.get('clevergy-energy-prices')) {
+        console.log('clevergy-energy-prices web component is available');
+      } else {
+        console.log('clevergy-energy-prices web component is not yet available, waiting...');
+        customElements.whenDefined('clevergy-energy-prices').then(() => {
+          console.log('clevergy-energy-prices web component is now available');
+        });
+      }
+    }
+  }, [preview, module.id]);
+
   const renderModule = () => {
     switch (module.id) {
       case 'alert':
@@ -119,7 +136,7 @@ const ClervergyModules = ({ module, preview = false }) => {
         if (preview) {
           // En modo preview, renderizamos el web component real de Clevergy
           return (
-            <div className="w-full">
+            <div className="w-full p-4" ref={energyPricesRef}>
               <clevergy-energy-prices data-show-energy-price-surplus="true"></clevergy-energy-prices>
             </div>
           );
