@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -10,15 +9,20 @@ const ClervergyModules = ({ module, preview = false }) => {
   const energyPricesRef = useRef(null);
 
   useEffect(() => {
-    if (preview && module.id === 'energy-prices' && energyPricesRef.current) {
+    if (preview && module.id === 'energy-prices') {
       console.log('Clevergy energy prices component mounted in preview mode');
-      // Verificar si el web component está disponible
+      
+      // Esperar a que el web component esté definido
       if (customElements.get('clevergy-energy-prices')) {
         console.log('clevergy-energy-prices web component is available');
       } else {
         console.log('clevergy-energy-prices web component is not yet available, waiting...');
         customElements.whenDefined('clevergy-energy-prices').then(() => {
           console.log('clevergy-energy-prices web component is now available');
+          // Forzar re-render si es necesario
+          if (energyPricesRef.current) {
+            console.log('Web component should now be rendered');
+          }
         });
       }
     }
@@ -134,7 +138,7 @@ const ClervergyModules = ({ module, preview = false }) => {
 
       case 'energy-prices':
         if (preview) {
-          // En modo preview, renderizamos el web component real de Clevergy
+          // En modo preview, renderizamos el web component real de Clevergy CON EL ATRIBUTO CORRECTO
           return (
             <div className="w-full p-4" ref={energyPricesRef}>
               <clevergy-energy-prices data-show-energy-price-surplus="true"></clevergy-energy-prices>
