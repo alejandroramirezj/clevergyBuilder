@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Plus, Grid3X3, Type, Image, Square as ButtonIcon, Bell, BarChart3 } from 'lucide-react';
+import { Search, Plus, Grid3X3, Type, Image, Square as ButtonIcon, Bell, BarChart3, Zap } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 const ModuleSidebar = ({ onModuleDrop, projectType }) => {
@@ -52,6 +52,14 @@ const ModuleSidebar = ({ onModuleDrop, projectType }) => {
       icon: BarChart3,
       description: 'Gráfico de datos interactivo',
       color: 'from-indigo-500 to-cyan-500'
+    },
+    {
+      id: 'energy-prices',
+      name: 'Energy Prices',
+      category: 'Data',
+      icon: Zap,
+      description: 'Precios de energía en tiempo real',
+      color: 'from-yellow-500 to-orange-500'
     }
   ];
 
