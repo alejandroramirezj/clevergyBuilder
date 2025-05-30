@@ -788,7 +788,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
           'Accept': 'application/json',
           'clevergy-api-key': apiKey
         }
-      }, 'Buscar usuario por email');
+      }, '🔍 Paso 1/3: Buscando usuario por email para obtener su ID');
       const userData = await userResp.json();
       if (!userResp.ok || !userData.elements || userData.totalElements < 1) {
         setError('No se encontró ningún usuario con ese email.');
@@ -806,7 +806,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
           'Accept': 'application/json',
           'clevergy-api-key': apiKey
         }
-      }, 'Obtener casas del usuario');
+      }, '🏠 Paso 2/3: Obteniendo las casas asociadas al usuario');
       const housesData = await housesResp.json();
       if (!housesResp.ok) {
         setError('No se pudieron obtener las casas del usuario.');
@@ -842,7 +842,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
         method: 'GET',
         url: `https://connect.clever.gy/auth/${userId}/token`,
         headers: { 'Accept': 'application/json', 'clevergy-api-key': apiKey },
-        comment: `Intentando obtener token JWT para userId: ${userId} y houseId: ${houseId}`,
+        comment: `🔑 Paso 3/3: Obteniendo token JWT para impersonar al usuario y acceder a sus suministros`,
       });
       const url = `https://connect.clever.gy/auth/${userId}/token`;
       const response = await loggedFetch(url, {
@@ -851,12 +851,18 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
           'Accept': 'application/json',
           'clevergy-api-key': apiKey
         }
-      }, 'Obtener token JWT para usuario');
+      }, '🔑 Paso 3/3: Obteniendo token JWT (caducidad: 1 hora)');
       const data = await response.json();
       if (response.ok && data.jwt) {
         setToken(data.jwt);
         setHouseId(houseId);
         setError("");
+        // Añadir mensaje informativo sobre el token
+        logApiCall({
+          method: 'INFO',
+          url: 'Token obtenido',
+          comment: '✅ Token JWT obtenido correctamente. Este token tiene una validez de 1 hora y permite acceder a los datos del usuario y sus suministros.',
+        });
       } else {
         setError('Respuesta inesperada: ' + JSON.stringify(data));
         setToken("");
@@ -1260,26 +1266,30 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                 {houses.length > 0 && (
                   <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Selecciona una casa:</label>
-                    <div className="space-y-2">
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-sm"
+                      value={selectedHouseId}
+                      onChange={e => handleSelectHouseAndGetToken(e.target.value)}
+                      disabled={isLoading}
+                    >
+                      <option value="" disabled>Elige una casa...</option>
                       {houses.map((house) => (
-                        <div key={house.houseId} className="flex items-center gap-2">
-                                          <input
-                            type="radio"
-                            id={house.houseId}
-                            name="house"
-                            value={house.houseId}
-                            checked={selectedHouseId === house.houseId}
-                            onChange={() => handleSelectHouseAndGetToken(house.houseId)}
-                            disabled={isLoading}
-                          />
-                          <label htmlFor={house.houseId} className="text-sm text-gray-700 cursor-pointer">
-                            {house.address || house.houseId}
-                          </label>
-                                        </div>
+                        <option key={house.houseId} value={house.houseId}>
+                          {house.address ? `${house.address}` : house.houseId}
+                          {house.cups ? ` · ${house.cups}` : ''}
+                        </option>
                       ))}
-                    </div>
-                                </div>
-                              )}
+                    </select>
+                    {selectedHouseId && (
+                      <div className="mt-2 text-xs text-gray-600 bg-gray-50 rounded p-2 border border-gray-100 flex flex-col gap-1">
+                        <span><span className="font-semibold">Dirección:</span> {houses.find(h => h.houseId === selectedHouseId)?.address || selectedHouseId}</span>
+                        {houses.find(h => h.houseId === selectedHouseId)?.cups && (
+                          <span><span className="font-semibold">CUPS:</span> {houses.find(h => h.houseId === selectedHouseId)?.cups}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
                 {error && (
                   <div className="text-red-500 text-sm mt-2">
                     {error}
@@ -1287,16 +1297,18 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                 )}
                       </div>
               {/* Campos de autenticación */}
+              {/*
               <div className="space-y-3 mt-4">
                 <div>
                   <label className="text-xs font-medium text-gray-700 mb-1 block">houseid</label>
                   <Input value={houseId} onChange={e => setHouseId(e.target.value)} className="bg-gray-50 border-0 focus:bg-white text-sm" placeholder="Ingresa el houseid" />
-                    </div>
+                </div>
                 <div>
                   <label className="text-xs font-medium text-gray-700 mb-1 block">Token</label>
                   <Input value={token} onChange={e => setToken(e.target.value)} className="bg-gray-50 border-0 focus:bg-white text-sm" placeholder="Ingresa el token" />
                 </div>
               </div>
+              */}
             </div>
           </details>
         </div>
