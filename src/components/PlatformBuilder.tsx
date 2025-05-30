@@ -4,6 +4,9 @@ import BuilderCanvas from './BuilderCanvas';
 import PreviewPanel from './PreviewPanel';
 import { Button } from '@/components/ui/button';
 import { Play, Save, Download, Settings } from 'lucide-react';
+import { ApiConsoleProvider } from './ApiConsoleContext';
+import ApiConsole from './ApiConsole';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from './ui/resizable';
 
 const clevergyDefaultVars = {
   '--clevergy-font-family': 'Inter, system-ui, sans-serif',
@@ -46,45 +49,52 @@ const PlatformBuilder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      {/* Header */}
-      <header className="border-b border-gray-200/50 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <img
-                  src="/favicon%20clevergy.png"
-                  alt="Clevergy logo"
-                  className="w-8 h-8 rounded-lg object-cover bg-white border border-gray-200"
-                />
-                <h1 className="text-xl font-semibold text-gray-900">Clevergy Builder</h1>
+    <ApiConsoleProvider>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex flex-col">
+        {/* Header */}
+        <header className="border-b border-gray-200/50 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <img
+                    src="/favicon%20clevergy.png"
+                    alt="Clevergy logo"
+                    className="w-8 h-8 rounded-lg object-cover bg-white border border-gray-200"
+                  />
+                  <h1 className="text-xl font-semibold text-gray-900">Clevergy Builder</h1>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <div className="flex h-[calc(100vh-80px)]">
-        <ModuleSidebar 
-          onModuleDrop={handleModuleDrop}
-          projectType={projectType}
-          stylesVars={stylesVars}
-          setStylesVars={setStylesVars}
-        />
-        <div className="flex-1 flex flex-col">
-          {/* Aquí va el área de arrastrar módulos (puedes dejar el mensaje si no hay módulos) */}
-          {/* ... podrías dejar el mensaje de BuilderCanvas si quieres ... */}
-          <PreviewPanel
-            modules={selectedModules}
+        </header>
+        {/* Main Content */}
+        <div className="flex flex-1 h-[calc(100vh-80px)] min-h-0 overflow-hidden">
+          <ModuleSidebar 
             onModuleDrop={handleModuleDrop}
-            onModuleRemove={handleModuleRemove}
+            projectType={projectType}
             stylesVars={stylesVars}
+            setStylesVars={setStylesVars}
           />
+          <div className="flex-1 flex flex-col min-h-0">
+            <ResizablePanelGroup direction="vertical" style={{height: '100%'}}>
+              <ResizablePanel defaultSize={75} minSize={20} maxSize={95} style={{minHeight:0, overflow:'auto'}}>
+                <PreviewPanel
+                  modules={selectedModules}
+                  onModuleDrop={handleModuleDrop}
+                  onModuleRemove={handleModuleRemove}
+                  stylesVars={stylesVars}
+                />
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={25} minSize={10} maxSize={60} style={{minHeight:0, overflow:'auto'}}>
+                <ApiConsole />
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </div>
         </div>
       </div>
-    </div>
+    </ApiConsoleProvider>
   );
 };
 

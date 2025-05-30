@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Search, Plus, Zap, Trash2, Sun, Plug, Star, User, Lock, Info, Flame, Award, Paintbrush } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import ReactDOM from 'react-dom';
+import { useApiConsole } from './ApiConsoleContext';
 
 // Estado para estilos globales
 const defaultStyles = {
@@ -241,6 +242,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   const [email, setEmail] = useState("");
   const [houses, setHouses] = useState([]);
   const [selectedHouseId, setSelectedHouseId] = useState("");
+  const { logApiCall } = useApiConsole();
 
   // Ejemplo de definición de módulos con categoría
   const allModules = [
@@ -718,6 +720,49 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     return acc;
   }, 0);
 
+  // Helper para loggear peticiones
+  const loggedFetch = async (url, options, comment) => {
+    const start = Date.now();
+    let status, statusText, responseData;
+    try {
+      const res = await fetch(url, options);
+      status = res.status;
+      statusText = res.statusText;
+      let data;
+      try {
+        data = await res.clone().json();
+      } catch {
+        data = await res.clone().text();
+      }
+      responseData = data;
+      logApiCall({
+        method: options?.method || 'GET',
+        url,
+        status,
+        statusText,
+        headers: options?.headers,
+        body: options?.body,
+        response: data,
+        time: Date.now() - start,
+        comment,
+      });
+      return res;
+    } catch (err) {
+      logApiCall({
+        method: options?.method || 'GET',
+        url,
+        status,
+        statusText,
+        headers: options?.headers,
+        body: options?.body,
+        response: responseData || String(err),
+        time: Date.now() - start,
+        comment: comment + ' (error)',
+      });
+      throw err;
+    }
+  };
+
   const fetchToken = async () => {
     if (!apiKey || !email) {
       setError("Por favor, ingresa el API key y el email");
@@ -734,13 +779,13 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     try {
       // 1. Buscar el userId a partir del email
       const userUrl = `https://connect.clever.gy/users?size=1&sort=id&direction=ASC&email=${encodeURIComponent(email)}`;
-      const userResp = await fetch(userUrl, {
+      const userResp = await loggedFetch(userUrl, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
           'clevergy-api-key': apiKey
         }
-      });
+      }, 'Buscar usuario por email');
       const userData = await userResp.json();
       if (!userResp.ok || !userData.elements || userData.totalElements < 1) {
         setError('No se encontró ningún usuario con ese email.');
@@ -752,13 +797,13 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
 
       // 2. Buscar las casas del usuario
       const housesUrl = `https://connect.clever.gy/users/${foundUserId}/supplies`;
-      const housesResp = await fetch(housesUrl, {
+      const housesResp = await loggedFetch(housesUrl, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
           'clevergy-api-key': apiKey
         }
-      });
+      }, 'Obtener casas del usuario');
       const housesData = await housesResp.json();
       if (!housesResp.ok) {
         setError('No se pudieron obtener las casas del usuario.');
@@ -766,10 +811,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
         return;
       }
       if (Array.isArray(housesData)) {
-        // respuesta tipo lista
         setHouses(housesData);
       } else if (housesData.elements) {
-        // respuesta tipo objeto con elements
         setHouses(housesData.elements);
       } else {
         setError('No se encontraron casas para este usuario.');
@@ -778,7 +821,6 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       }
       setError('');
       setIsLoading(false);
-      // Esperar a que el usuario seleccione una casa antes de pedir el token
     } catch (err) {
       setError('Error en la petición: ' + (err.message || err));
       setToken("");
@@ -786,21 +828,27 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     }
   };
 
-  // Función para pedir el token una vez seleccionada la casa
   const handleSelectHouseAndGetToken = async (houseId) => {
     setSelectedHouseId(houseId);
     setIsLoading(true);
     setError("");
     setToken("");
     try {
+      // Log explícito antes de la petición
+      logApiCall({
+        method: 'GET',
+        url: `https://connect.clever.gy/auth/${userId}/token`,
+        headers: { 'Accept': 'application/json', 'clevergy-api-key': apiKey },
+        comment: `Intentando obtener token JWT para userId: ${userId} y houseId: ${houseId}`,
+      });
       const url = `https://connect.clever.gy/auth/${userId}/token`;
-      const response = await fetch(url, {
+      const response = await loggedFetch(url, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
           'clevergy-api-key': apiKey
         }
-      });
+      }, 'Obtener token JWT para usuario');
       const data = await response.json();
       if (response.ok && data.jwt) {
         setToken(data.jwt);
