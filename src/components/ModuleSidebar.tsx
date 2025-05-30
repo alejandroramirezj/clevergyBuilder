@@ -236,7 +236,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   // Estado global para controlar qué categorías están abiertas
   const [openCategories, setOpenCategories] = useState(() => {
     const initial = {};
-    allCategories.forEach((cat, i) => { initial[cat] = i === 0; });
+    allCategories.forEach((cat) => { initial[cat] = false; }); // Todas colapsadas por defecto
     return initial;
   });
   const [email, setEmail] = useState("");
@@ -642,6 +642,20 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     return attrs;
   }
 
+  // Helper para insertar comentarios en el htmlTag generado
+  function addCommentsToHtmlTag(htmlTag, houseId, token) {
+    let tag = htmlTag;
+    tag = tag.replace(
+      /data-house-id="([^"]*)"/,
+      'data-house-id="$1" <!-- Este es el houseid que obtienes en la llamada GET user supplies -->'
+    );
+    tag = tag.replace(
+      /data-token="([^"]*)"/,
+      'data-token="$1" <!-- Este es el token que obtienes en la petición GET token -->'
+    );
+    return tag;
+  }
+
   const handleDragStart = (e, module) => {
     let htmlTag = module.htmlTag;
     const attrs = extractAttrs(htmlTag);
@@ -654,6 +668,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
         );
       }
     });
+    // Añadir comentarios bonitos y sencillos
+    htmlTag = addCommentsToHtmlTag(htmlTag, houseId, token);
     // Al arrastrar, el objeto debe tener el htmlTag actualizado
     const moduleWithCustom = { ...module, htmlTag };
     e.dataTransfer.setData('application/json', JSON.stringify(moduleWithCustom));
@@ -876,7 +892,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   };
 
   return (
-    <div className="w-80 h-screen bg-white border-r border-gray-200 flex flex-col">
+    <div className="w-96 h-screen bg-white border-r border-gray-200 flex flex-col">
       <div className="flex-1 overflow-y-auto p-4">
         {/* 1. Personaliza tu apariencia */}
         <div className="mb-6">
