@@ -77,8 +77,8 @@ const PlatformBuilder = () => {
             setStylesVars={setStylesVars}
           />
           <div className="flex-1 flex flex-col min-h-0">
-            <ResizablePanelGroup direction="vertical" style={{height: '100%'}}>
-              <ResizablePanel defaultSize={75} minSize={20} maxSize={95} style={{minHeight:0, overflow:'auto'}}>
+            <ResizablePanelGroup direction="vertical" className="h-full min-h-0 flex-1" style={{height: '100%'}}>
+              <ResizablePanel defaultSize={75} minSize={20} maxSize={95} className="h-full min-h-0 flex-1" style={{minHeight:0, overflow:'auto'}}>
                 <PreviewPanel
                   modules={selectedModules}
                   onModuleDrop={handleModuleDrop}
@@ -87,7 +87,7 @@ const PlatformBuilder = () => {
                 />
               </ResizablePanel>
               <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={25} minSize={10} maxSize={60} style={{minHeight:0, overflow:'auto'}}>
+              <ResizablePanel defaultSize={25} minSize={10} maxSize={60} className="h-full min-h-0 flex-1" style={{minHeight:0, overflow:'auto'}}>
                 <ApiConsole />
               </ResizablePanel>
             </ResizablePanelGroup>
