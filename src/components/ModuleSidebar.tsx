@@ -193,8 +193,12 @@ const defaultSavedStyles = [
 
 const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars }) => {
   const [houseId, setHouseId] = useState("6413c72b-1e8f-41a9-8024-b810cd260b42");
-  const [token, setToken] = useState("eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJodHRwczovL2lkZW50aXR5dG9vbGtpdC5nb29nbGVhcGlzLmNvbS9nb29nbGUuaWRlbnRpdHkuaWRlbnRpdHl0b29sa2l0LnYxLklkZW50aXR5VG9vbGtpdCIsImV4cCI6MTc0ODQ0NzgwOCwiaWF0IjoxNzQ4NDQ0MjA4LCJpc3MiOiJwdWJsaWMtZnJvbnQtYmFja0BjbGV2ZXJneS5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsInN1YiI6InB1YmxpYy1mcm9udC1iYWNrQGNsZXZlcmd5LmlhbS5nc2VydmljZWFjY291bnQuY29tIiwidGVuYW50X2lkIjoiY2xldmVyZ3ktZW8zOW0iLCJ1aWQiOiJSYzhETjVFRXJ5VEY0M0hiQXR6dTliV0ZZQk4yIn0.AGFE5utjbaHQ7fm0VabGytcwPVI4IKTxtk7pWMpgS85zldDFn-9yHrfpzvjr9gMkF16hoQV_RdkzaMsuspeq5_sZEIOcL8owIThObuYQbJHLQ7rgxtczvcIcJHxfJypFX8joytrF4VDuH1yNYG6arwoVSqaz2Vzm-9UnfSC8YG2Ud-HSBlPi4XLMjJIemyMxmsCq7RItogLHnSVhU1gLnUwDdSr-sEu4GY9fWE_EwaCasyHTZdXDD_aQswsu6fuiSPwJaRIFv2_2_Yip84cCRa3Bgc6USH3Ineoh-0zDm7xIHXCpqVEdIxbdET1N-oUxXX7QyBMKJVz_MGAzc-FE4A");
+  const [token, setToken] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const [userId, setUserId] = useState("");
   const [authFilter, setAuthFilter] = useState({ auth: true, noauth: true });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const allCategories = [
     "Energía",
     "Solar",
@@ -234,6 +238,9 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     allCategories.forEach((cat, i) => { initial[cat] = i === 0; });
     return initial;
   });
+  const [email, setEmail] = useState("");
+  const [houses, setHouses] = useState([]);
+  const [selectedHouseId, setSelectedHouseId] = useState("");
 
   // Ejemplo de definición de módulos con categoría
   const allModules = [
@@ -711,8 +718,167 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     return acc;
   }, 0);
 
+  const fetchToken = async () => {
+    if (!apiKey || !email) {
+      setError("Por favor, ingresa el API key y el email");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+    setHouses([]);
+    setSelectedHouseId("");
+    setToken("");
+    setUserId("");
+
+    try {
+      // 1. Buscar el userId a partir del email
+      const userUrl = `https://connect.clever.gy/users?size=1&sort=id&direction=ASC&email=${encodeURIComponent(email)}`;
+      const userResp = await fetch(userUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'clevergy-api-key': apiKey
+        }
+      });
+      const userData = await userResp.json();
+      if (!userResp.ok || !userData.elements || userData.totalElements < 1) {
+        setError('No se encontró ningún usuario con ese email.');
+        setIsLoading(false);
+        return;
+      }
+      const foundUserId = userData.elements[0].id;
+      setUserId(foundUserId);
+
+      // 2. Buscar las casas del usuario
+      const housesUrl = `https://connect.clever.gy/users/${foundUserId}/supplies`;
+      const housesResp = await fetch(housesUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'clevergy-api-key': apiKey
+        }
+      });
+      const housesData = await housesResp.json();
+      if (!housesResp.ok) {
+        setError('No se pudieron obtener las casas del usuario.');
+        setIsLoading(false);
+        return;
+      }
+      if (Array.isArray(housesData)) {
+        // respuesta tipo lista
+        setHouses(housesData);
+      } else if (housesData.elements) {
+        // respuesta tipo objeto con elements
+        setHouses(housesData.elements);
+      } else {
+        setError('No se encontraron casas para este usuario.');
+        setIsLoading(false);
+        return;
+      }
+      setError('');
+      setIsLoading(false);
+      // Esperar a que el usuario seleccione una casa antes de pedir el token
+    } catch (err) {
+      setError('Error en la petición: ' + (err.message || err));
+      setToken("");
+      setIsLoading(false);
+    }
+  };
+
+  // Función para pedir el token una vez seleccionada la casa
+  const handleSelectHouseAndGetToken = async (houseId) => {
+    setSelectedHouseId(houseId);
+    setIsLoading(true);
+    setError("");
+    setToken("");
+    try {
+      const url = `https://connect.clever.gy/auth/${userId}/token`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'clevergy-api-key': apiKey
+        }
+      });
+      const data = await response.json();
+      if (response.ok && data.jwt) {
+        setToken(data.jwt);
+        setHouseId(houseId);
+        setError("");
+      } else {
+        setError('Respuesta inesperada: ' + JSON.stringify(data));
+        setToken("");
+      }
+    } catch (err) {
+      setError('Error en la petición: ' + (err.message || err));
+      setToken("");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="w-80 bg-white border-r border-gray-200/50 flex flex-col">
+    <div className="w-80 h-screen bg-white border-r border-gray-200 flex flex-col">
+      <div className="p-4 border-b border-gray-200">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+            <input
+              type="text"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+              placeholder="Ingresa tu API key"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+              placeholder="Ingresa el email del usuario"
+            />
+          </div>
+          <button
+            onClick={fetchToken}
+            disabled={isLoading}
+            className="w-full bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
+          >
+            {isLoading ? 'Buscando casas...' : 'Buscar casas del usuario'}
+          </button>
+          {houses.length > 0 && (
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Selecciona una casa:</label>
+              <div className="space-y-2">
+                {houses.map((house) => (
+                  <div key={house.houseId} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id={house.houseId}
+                      name="house"
+                      value={house.houseId}
+                      checked={selectedHouseId === house.houseId}
+                      onChange={() => handleSelectHouseAndGetToken(house.houseId)}
+                      disabled={isLoading}
+                    />
+                    <label htmlFor={house.houseId} className="text-sm text-gray-700 cursor-pointer">
+                      {house.address || house.houseId}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {error && (
+            <div className="text-red-500 text-sm mt-2">
+              {error}
+            </div>
+          )}
+        </div>
+      </div>
       {/* Campos de autenticación */}
       <div className="p-4 border-b border-gray-100 space-y-3">
         <div>
