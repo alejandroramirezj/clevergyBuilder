@@ -27,6 +27,10 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: undefined
       }
-    }
+    },
+    sourcemap: true
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom']
   }
 }));
