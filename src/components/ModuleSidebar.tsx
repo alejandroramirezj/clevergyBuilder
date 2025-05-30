@@ -642,17 +642,19 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     return attrs;
   }
 
-  // Helper para insertar comentarios en el htmlTag generado
+  // Helper para insertar comentarios ANTES de la etiqueta, nunca dentro de los atributos
   function addCommentsToHtmlTag(htmlTag, houseId, token) {
     let tag = htmlTag;
-    tag = tag.replace(
-      /data-house-id="([^"]*)"/,
-      'data-house-id="$1" <!-- Este es el houseid que obtienes en la llamada GET user supplies -->'
-    );
-    tag = tag.replace(
-      /data-token="([^"]*)"/,
-      'data-token="$1" <!-- Este es el token que obtienes en la petición GET token -->'
-    );
+    const comments = [];
+    if (tag.includes('data-house-id')) {
+      comments.push('<!-- Este es el houseid que obtienes en la llamada GET user supplies -->');
+    }
+    if (tag.includes('data-token')) {
+      comments.push('<!-- Este es el token que obtienes en la petición GET token -->');
+    }
+    if (comments.length > 0) {
+      tag = comments.join('\n') + '\n' + tag;
+    }
     return tag;
   }
 
@@ -1228,15 +1230,104 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                               </div>
                               {showCustom && (
                                 <div className="mt-2 space-y-2">
-                                  {/* ...inputs de personalización de atributos... */}
-                                            </div>
+                                  {Object.entries(attrs).map(([attr, val]) => {
+                                    // Determinar el tipo de input basado en el atributo y su valor
+                                    const isBoolean = val === 'true' || val === 'false';
+                                    const isEnergyPricesType = attr === 'data-energy-prices-type';
+                                    const isLanguage = attr === 'data-language';
+                                    const isUnit = attr === 'data-unit';
+                                    
+                                    return (
+                                      <div key={attr} className="flex flex-col gap-1">
+                                        <label className="text-xs text-gray-500 flex items-center gap-1">
+                                          {attr.replace('data-', '').replace(/-/g, ' ')}
+                                          <Tooltip text={`Valor actual: ${String(val)}`} />
+                                        </label>
+                                        
+                                        {isBoolean ? (
+                                          <div className="flex items-center gap-2">
+                                            <input
+                                              type="checkbox"
+                                              checked={customAttrs[module.id]?.[attr] === 'true' || (!customAttrs[module.id]?.[attr] && val === 'true')}
+                                              onChange={e => {
+                                                setCustomAttrs(prev => ({
+                                                  ...prev,
+                                                  [module.id]: { ...prev[module.id], [attr]: e.target.checked ? 'true' : 'false' }
+                                                }));
+                                              }}
+                                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                            />
+                                            <span className="text-xs text-gray-600">Activar</span>
+                                          </div>
+                                        ) : isEnergyPricesType ? (
+                                          <select
+                                            value={customAttrs[module.id]?.[attr] || val}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                          >
+                                            <option value="PVPC">PVPC</option>
+                                            <option value="OMIE">OMIE</option>
+                                          </select>
+                                        ) : isLanguage ? (
+                                          <select
+                                            value={customAttrs[module.id]?.[attr] || val || ''}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                          >
+                                            <option value="" disabled>Elige idioma...</option>
+                                            <option value="es-ES">es-ES</option>
+                                            <option value="ca-ES">ca-ES</option>
+                                            <option value="gl-ES">gl-ES</option>
+                                          </select>
+                                        ) : isUnit ? (
+                                          <select
+                                            value={customAttrs[module.id]?.[attr] || val || ''}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                          >
+                                            <option value="ENERGY">ENERGY</option>
+                                            <option value="CURRENCY">CURRENCY</option>
+                                          </select>
+                                        ) : (
+                                          <input
+                                            type="text"
+                                            value={String(customAttrs[module.id]?.[attr] || val)}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                            placeholder={String(val)}
+                                          />
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               )}
-                                            </div>
-                                          );
+                            </div>
+                          );
                         })}
                       </div>
-                                            </div>
-                                          );
+                    </div>
+                  );
                 })}
               </div>
             </div>
@@ -1386,17 +1477,106 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                   </div>
                 {showCustom && (
                                     <div className="mt-2 space-y-2">
-                                  {/* ...inputs de personalización de atributos... */}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-                        )}
+                                  {Object.entries(attrs).map(([attr, val]) => {
+                                    // Determinar el tipo de input basado en el atributo y su valor
+                                    const isBoolean = val === 'true' || val === 'false';
+                                    const isEnergyPricesType = attr === 'data-energy-prices-type';
+                                    const isLanguage = attr === 'data-language';
+                                    const isUnit = attr === 'data-unit';
+                                    
+                                    return (
+                                      <div key={attr} className="flex flex-col gap-1">
+                                        <label className="text-xs text-gray-500 flex items-center gap-1">
+                                          {attr.replace('data-', '').replace(/-/g, ' ')}
+                                          <Tooltip text={`Valor actual: ${String(val)}`} />
+                                        </label>
+                                        
+                                        {isBoolean ? (
+                                          <div className="flex items-center gap-2">
+                                            <input
+                                              type="checkbox"
+                                              checked={customAttrs[module.id]?.[attr] === 'true' || (!customAttrs[module.id]?.[attr] && val === 'true')}
+                                              onChange={e => {
+                                                setCustomAttrs(prev => ({
+                                                  ...prev,
+                                                  [module.id]: { ...prev[module.id], [attr]: e.target.checked ? 'true' : 'false' }
+                                                }));
+                                              }}
+                                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                            />
+                                            <span className="text-xs text-gray-600">Activar</span>
+                                          </div>
+                                        ) : isEnergyPricesType ? (
+                                          <select
+                                            value={customAttrs[module.id]?.[attr] || val}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                          >
+                                            <option value="PVPC">PVPC</option>
+                                            <option value="OMIE">OMIE</option>
+                                          </select>
+                                        ) : isLanguage ? (
+                                          <select
+                                            value={customAttrs[module.id]?.[attr] || val || ''}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                          >
+                                            <option value="" disabled>Elige idioma...</option>
+                                            <option value="es-ES">es-ES</option>
+                                            <option value="ca-ES">ca-ES</option>
+                                            <option value="gl-ES">gl-ES</option>
+                                          </select>
+                                        ) : isUnit ? (
+                                          <select
+                                            value={customAttrs[module.id]?.[attr] || val || ''}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                          >
+                                            <option value="ENERGY">ENERGY</option>
+                                            <option value="CURRENCY">CURRENCY</option>
+                                          </select>
+                                        ) : (
+                                          <input
+                                            type="text"
+                                            value={String(customAttrs[module.id]?.[attr] || val)}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                            placeholder={String(val)}
+                                          />
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </details>
         </div>

@@ -41,7 +41,7 @@ const PlatformBuilder = () => {
   }, [stylesVars]);
 
   const handleModuleDrop = (module) => {
-    setSelectedModules(prev => [...prev, { ...module, id: Date.now() }]);
+    setSelectedModules(prev => [{ ...module, id: Date.now() }, ...prev]);
   };
 
   const handleModuleRemove = (moduleId) => {
