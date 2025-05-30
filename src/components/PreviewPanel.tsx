@@ -30,15 +30,19 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
   const [copied, setCopied] = useState({ style: false, html: false });
 
   const deviceSizes = {
-    desktop: { width: '100%', height: '800px' },
-    tablet: { width: '768px', height: '1024px' },
+    desktop: { width: '1200px', height: '800px' },
     mobile: { width: '375px', height: '667px' }
   };
 
+  const deviceOptions = [
+    { key: 'desktop', label: 'Desktop', icon: <Monitor size={16} className="inline mr-1" /> },
+    { key: 'mobile', label: 'Mobile', icon: <Smartphone size={16} className="inline mr-1" /> },
+  ];
+
   // Define el estilo del contenedor de módulos (siempre igual)
   const moduleContainerStyle = {
-    width: device==='desktop' ? 1200 : device==='tablet' ? 768 : 375,
-    minHeight: device==='mobile' ? 667 : device==='tablet' ? 1024 : 800,
+    width: deviceSizes[device].width,
+    minHeight: deviceSizes[device].height,
     background: 'transparent',
     borderRadius: 0,
     overflow: 'auto',
@@ -202,9 +206,16 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
         </div>
         {/* Selector de dispositivo */}
         <div className="flex gap-2 mt-4">
-          <button onClick={() => setDevice('desktop')} className={`px-3 py-1 rounded ${device==='desktop' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'}`}>Desktop</button>
-          <button onClick={() => setDevice('tablet')} className={`px-3 py-1 rounded ${device==='tablet' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'}`}>Tablet</button>
-          <button onClick={() => setDevice('mobile')} className={`px-3 py-1 rounded ${device==='mobile' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'}`}>Mobile</button>
+          {deviceOptions.map(opt => (
+            <button
+              key={opt.key}
+              onClick={() => setDevice(opt.key)}
+              className={`px-3 py-1 rounded flex items-center gap-1 ${device===opt.key ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'}`}
+            >
+              {opt.icon}
+              {opt.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -291,7 +302,6 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
         {!showCode && (
         <div className="mt-4 text-center text-sm text-gray-500">
           {device === 'desktop' && 'Vista desktop (1200px+)'}
-          {device === 'tablet' && 'Vista tablet (768px)'}
           {device === 'mobile' && 'Vista mobile (375px)'}
         </div>
         )}

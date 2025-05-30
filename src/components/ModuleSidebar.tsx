@@ -644,18 +644,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
 
   // Helper para insertar comentarios ANTES de la etiqueta, nunca dentro de los atributos
   function addCommentsToHtmlTag(htmlTag, houseId, token) {
-    let tag = htmlTag;
-    const comments = [];
-    if (tag.includes('data-house-id')) {
-      comments.push('<!-- Este es el houseid que obtienes en la llamada GET user supplies -->');
-    }
-    if (tag.includes('data-token')) {
-      comments.push('<!-- Este es el token que obtienes en la petición GET token -->');
-    }
-    if (comments.length > 0) {
-      tag = comments.join('\n') + '\n' + tag;
-    }
-    return tag;
+    return htmlTag;
   }
 
   const handleDragStart = (e, module) => {
@@ -816,7 +805,32 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       const foundUserId = userData.elements[0].id;
       setUserId(foundUserId);
 
-      // 2. Buscar las casas del usuario
+      // 2. Obtener el token del usuario
+      const tokenUrl = `https://connect.clever.gy/auth/${foundUserId}/token`;
+      const tokenResp = await loggedFetch(tokenUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'clevergy-api-key': apiKey
+        }
+      }, '🔑 Paso 2/3: Obteniendo token JWT para impersonar al usuario');
+      const tokenData = await tokenResp.json();
+      if (tokenResp.ok && tokenData.jwt) {
+        setToken(tokenData.jwt);
+        setError("");
+        logApiCall({
+          method: 'INFO',
+          url: 'Token obtenido',
+          comment: '✅ Token JWT obtenido correctamente. Este token tiene una validez de 1 hora y permite acceder a los datos del usuario y sus suministros.',
+        });
+      } else {
+        setError('No se pudo obtener el token del usuario.');
+        setToken("");
+        setIsLoading(false);
+        return;
+      }
+
+      // 3. Buscar las casas del usuario
       const housesUrl = `https://connect.clever.gy/users/${foundUserId}/supplies`;
       const housesResp = await loggedFetch(housesUrl, {
         method: 'GET',
@@ -824,7 +838,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
           'Accept': 'application/json',
           'clevergy-api-key': apiKey
         }
-      }, '🏠 Paso 2/3: Obteniendo las casas asociadas al usuario');
+      }, '🏠 Paso 3/3: Obteniendo las casas asociadas al usuario');
       const housesData = await housesResp.json();
       if (!housesResp.ok) {
         setError('No se pudieron obtener las casas del usuario.');
@@ -851,46 +865,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
 
   const handleSelectHouseAndGetToken = async (houseId) => {
     setSelectedHouseId(houseId);
-    setIsLoading(true);
-    setError("");
-    setToken("");
-    try {
-      // Log explícito antes de la petición
-      logApiCall({
-        method: 'GET',
-        url: `https://connect.clever.gy/auth/${userId}/token`,
-        headers: { 'Accept': 'application/json', 'clevergy-api-key': apiKey },
-        comment: `🔑 Paso 3/3: Obteniendo token JWT para impersonar al usuario y acceder a sus suministros`,
-      });
-      const url = `https://connect.clever.gy/auth/${userId}/token`;
-      const response = await loggedFetch(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'clevergy-api-key': apiKey
-        }
-      }, '🔑 Paso 3/3: Obteniendo token JWT (caducidad: 1 hora)');
-      const data = await response.json();
-      if (response.ok && data.jwt) {
-        setToken(data.jwt);
-        setHouseId(houseId);
-        setError("");
-        // Añadir mensaje informativo sobre el token
-        logApiCall({
-          method: 'INFO',
-          url: 'Token obtenido',
-          comment: '✅ Token JWT obtenido correctamente. Este token tiene una validez de 1 hora y permite acceder a los datos del usuario y sus suministros.',
-        });
-      } else {
-        setError('Respuesta inesperada: ' + JSON.stringify(data));
-        setToken("");
-      }
-    } catch (err) {
-      setError('Error en la petición: ' + (err.message || err));
-      setToken("");
-    } finally {
-      setIsLoading(false);
-    }
+    setHouseId(houseId);
+    // Ya no se pide el token aquí, porque ya se obtuvo antes
   };
 
   return (
