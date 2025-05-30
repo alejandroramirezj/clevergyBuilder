@@ -703,6 +703,14 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     setTimeout(() => setFeedback(''), 1200);
   };
 
+  // Calcular el total de módulos privados
+  const totalPrivateModules = Object.values(groupedModules).reduce((acc: number, mods) => {
+    if (Array.isArray(mods)) {
+      return acc + (mods as {auth: boolean}[]).filter(m => m.auth).length;
+    }
+    return acc;
+  }, 0);
+
   return (
     <div className="w-80 bg-white border-r border-gray-200/50 flex flex-col">
       {/* Campos de autenticación */}
@@ -742,7 +750,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               return (
                 <div key={s.name} className="flex items-center gap-2 w-full group relative">
                   <span className="text-xs text-gray-400 w-4 text-right">{idx + 1}.</span>
-                  <button
+        <button
                     className={`flex-1 text-left px-2 py-1 text-xs rounded-lg border border-gray-200 transition-colors flex items-center gap-2 ${isActive ? 'bg-gray-200 font-bold text-blue-700' : 'bg-white hover:bg-blue-50'}`}
                     onClick={() => handleLoadStyle(s.vars)}
                     title="Cargar estilo"
@@ -758,15 +766,15 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                         style={{ fontWeight: 500 }}
                         title="Abrir en la vista lateral"
                         onClick={e => { e.stopPropagation(); setStylesVars({ ...s.vars }); setStyleName(s.name); setShowStyles(true); }}
-                      >
+        >
                         <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="#e5e7eb" stroke="#94a3b8" strokeWidth="1.5"/><rect x="5.5" y="6.5" width="5" height="11" rx="1" fill="#fff" stroke="#64748b" strokeWidth="1.2"/><rect x="12.5" y="6.5" width="6" height="11" rx="1" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1.2"/></svg>
                         <span className="hidden sm:inline">Ver estilo</span>
-                      </button>
+        </button>
                     )}
                     {/* Iconos de editar y eliminar solo para estilos editables */}
                     {isEditable && (
                       <span className="flex items-center ml-auto gap-1">
-                        <button
+        <button
                           className="text-gray-400 hover:text-blue-500 p-1 rounded transition-colors"
                           title="Editar estilo"
                           onClick={e => { e.stopPropagation(); setStylesVars({ ...s.vars }); setStyleName(s.name); setShowStyles(true); }}
@@ -782,10 +790,10 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                         >
                           <Trash2 size={16} />
                         </button>
-                      </span>
+            </span>
                     )}
-                  </button>
-                </div>
+        </button>
+      </div>
               );
             })}
             {/* Botón compacto para crear nuevo estilo, alineado a la izquierda */}
@@ -1007,23 +1015,26 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                 <span className="text-xs text-green-600 font-semibold animate-pulse bg-green-50 rounded px-3 py-1 shadow">{feedback}</span>
               </div>
             )}
-            <div className="flex flex-col gap-2 mt-6 border-t pt-4">
+            {/* Mostrar input y botón guardar solo si NO es un estilo por defecto */}
+            {!["Clevergy", "Cangrejo Rosa", "Gas Naranja"].includes(styleName) && (
+              <div className="flex flex-col gap-2 mt-6 border-t pt-4">
               <input
                 type="text"
-                className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
-                placeholder="Nombre del estilo"
-                value={styleName}
-                onChange={e => setStyleName(e.target.value)}
-                maxLength={32}
+                  className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                  placeholder="Nombre del estilo"
+                  value={styleName}
+                  onChange={e => setStyleName(e.target.value)}
+                  maxLength={32}
               />
             <button
-                className="px-4 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all active:scale-95 active:shadow-inner focus:ring-2 focus:ring-blue-300"
-                style={{ minWidth: 80 }}
-                onClick={handleSaveStyle}
-              >
-                Guardar estilo
+                  className="px-4 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all active:scale-95 active:shadow-inner focus:ring-2 focus:ring-blue-300"
+                  style={{ minWidth: 80 }}
+                  onClick={handleSaveStyle}
+                >
+                  Guardar estilo
             </button>
-            </div>
+              </div>
+            )}
         </div>
         )}
       </div>
@@ -1036,229 +1047,236 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
         </h3>
         {/* 1. Sección inicial: Explora sin autenticar */}
         <div className="mb-6">
-          <h3 className="text-base font-bold text-gray-900 flex items-center gap-2 mb-1">
-            <span role="img" aria-label="puzzle">🧩</span> Explora sin autenticar
-          </h3>
-          <div className="flex items-center gap-2 mb-3 text-blue-700 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 text-xs">
-            <Info size={16} className="text-blue-400" />
-            <span>Estos módulos no requieren autenticación. Puedes probarlos directamente.</span>
-          </div>
-          <div>
-            {Object.entries(groupedModules).map(([cat, mods]) => {
-              const publicMods = Array.isArray(mods) ? mods.filter(m => !m.auth) : [];
-              if (publicMods.length === 0) return null;
-              return (
-                <div key={cat} className="mb-2">
-                  <div className="text-xs font-bold text-gray-700 mb-1">{cat}</div>
-                  <div className="space-y-1">
-                    {publicMods.map(module => {
-            const attrs = extractAttrs(module.htmlTag);
-            const showCustom = customAttrs[module.id]?.show || false;
-            return (
-              <div
-                key={module.id}
-                          className="relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group cursor-grab hover:shadow-md transition-shadow flex flex-col gap-1"
-                draggable
-                onDragStart={e => handleDragStart(e, module)}
-                          style={{ marginBottom: 4 }}
-                        >
-                          <div className="flex items-center justify-between w-full gap-2">
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-gray-900 text-xs truncate">{module.name}</h4>
-                              <p className="text-xs text-gray-600 line-clamp-1 truncate">{module.description}</p>
-                            </div>
-                <button
-                              className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
-                  onClick={e => {
-                    e.stopPropagation();
-                    setCustomAttrs(prev => ({
-                      ...prev,
-                      [module.id]: { ...prev[module.id], show: !showCustom }
-                    }));
-                  }}
-                  type="button"
-                >
-                  {showCustom ? 'Ocultar' : 'Personalizar'}
-                </button>
-                  </div>
-                          {showCustom && (
-                            <div className="mt-2 space-y-2">
-                              {(() => {
-                                // Orden específico para energy-prices
-                                if (module.id === 'energy-prices') {
-                                  const orderedAttrs = [];
-                                  if ('data-energy-prices-type' in attrs) orderedAttrs.push(['data-energy-prices-type', attrs['data-energy-prices-type']]);
-                                  if ('data-language' in attrs) orderedAttrs.push(['data-language', attrs['data-language']]);
-                                  if ('data-show-energy-price-list' in attrs) orderedAttrs.push(['data-show-energy-price-list', attrs['data-show-energy-price-list']]);
-                                  // El surplus siempre el último
-                                  if ('data-show-energy-price-surplus' in attrs) orderedAttrs.push(['data-show-energy-price-surplus', attrs['data-show-energy-price-surplus']]);
-                                  // El resto de atributos
-                                  Object.entries(attrs).forEach(([attr, val]) => {
-                                    if (!['data-energy-prices-type','data-language','data-show-energy-price-list','data-show-energy-price-surplus'].includes(attr)) {
-                                      orderedAttrs.push([attr, val]);
+          <details className="border rounded-lg" open>
+            <summary className="px-4 py-3 text-base font-semibold cursor-pointer bg-blue-100 border-b rounded-t-lg flex items-center gap-2 select-none">
+              <span role="img" aria-label="puzzle">🌐</span>
+              <span>Públicos ({modules.filter(m => !m.auth).length})</span>
+              <svg className="ml-2 transition-transform group-open:rotate-90" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </summary>
+            <div className="p-4">
+              <div className="flex items-center gap-2 mb-3 text-blue-700 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 text-xs">
+                <Info size={16} className="text-blue-400" />
+                <span>Estos módulos no requieren autenticación. Puedes probarlos directamente.</span>
+              </div>
+              <div>
+                {Object.entries(groupedModules).map(([cat, mods]) => {
+                  const publicMods = Array.isArray(mods) ? mods.filter(m => !m.auth) : [];
+                  if (publicMods.length === 0) return null;
+                  return (
+                    <div key={cat} className="mb-2">
+                      <div className="text-xs font-bold text-gray-700 mb-1">{cat}</div>
+                      <div className="space-y-1">
+                        {publicMods.map(module => {
+                          const attrs = extractAttrs(module.htmlTag);
+                          const showCustom = customAttrs[module.id]?.show || false;
+                          return (
+                            <div
+                              key={module.id}
+                              className="relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group cursor-grab hover:shadow-md transition-shadow flex flex-col gap-1"
+                              draggable
+                              onDragStart={e => handleDragStart(e, module)}
+                              style={{ marginBottom: 4 }}
+                            >
+                              <div className="flex items-center justify-between w-full gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-gray-900 text-xs truncate">{module.name}</h4>
+                                  <p className="text-xs text-gray-600 line-clamp-1 truncate">{module.description}</p>
+                                </div>
+                                <button
+                                  className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    setCustomAttrs(prev => ({
+                                      ...prev,
+                                      [module.id]: { ...prev[module.id], show: !showCustom }
+                                    }));
+                                  }}
+                                  type="button"
+                                >
+                                  {showCustom ? 'Ocultar' : 'Personalizar'}
+                                </button>
+                              </div>
+                              {showCustom && (
+                                <div className="mt-2 space-y-2">
+                                  {(() => {
+                                    // Orden específico para energy-prices
+                                    if (module.id === 'energy-prices') {
+                                      const orderedAttrs = [];
+                                      if ('data-energy-prices-type' in attrs) orderedAttrs.push(['data-energy-prices-type', attrs['data-energy-prices-type']]);
+                                      if ('data-language' in attrs) orderedAttrs.push(['data-language', attrs['data-language']]);
+                                      if ('data-show-energy-price-list' in attrs) orderedAttrs.push(['data-show-energy-price-list', attrs['data-show-energy-price-list']]);
+                                      // El surplus siempre el último
+                                      if ('data-show-energy-price-surplus' in attrs) orderedAttrs.push(['data-show-energy-price-surplus', attrs['data-show-energy-price-surplus']]);
+                                      // El resto de atributos
+                                      Object.entries(attrs).forEach(([attr, val]) => {
+                                        if (!['data-energy-prices-type','data-language','data-show-energy-price-list','data-show-energy-price-surplus'].includes(attr)) {
+                                          orderedAttrs.push([attr, val]);
+                                        }
+                                      });
+                                      return orderedAttrs.map(([attr, val]) => {
+                                        // Selector de idioma
+                                        if (attr === 'data-language') {
+                                          return (
+                                            <div key={attr} className="flex items-center gap-2">
+                                              <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
+                                              <select
+                                                className="flex-1 border rounded px-2 py-1 text-xs"
+                                                value={customAttrs[module.id]?.[attr] ?? val}
+                                                onChange={e => setCustomAttrs(prev => ({
+                                                  ...prev,
+                                                  [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                                }))}
+                                              >
+                                                <option value="es-ES">es-ES</option>
+                                                <option value="ca-ES">ca-ES</option>
+                                                <option value="gl-ES">gl-ES</option>
+                                              </select>
+                                            </div>
+                                          );
+                                        }
+                                        // Select para tipo
+                                        if (attr === 'data-energy-prices-type') {
+                                          return (
+                                            <div key={attr} className="flex items-center gap-2">
+                                              <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
+                                              <select
+                                                className="flex-1 border rounded px-2 py-1 text-xs"
+                                                value={customAttrs[module.id]?.[attr] ?? val}
+                                                onChange={e => setCustomAttrs(prev => ({
+                                                  ...prev,
+                                                  [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                                }))}
+                                              >
+                                                <option value="PVPC">PVPC</option>
+                                                <option value="OMIE">OMIE</option>
+                                              </select>
+                                            </div>
+                                          );
+                                        }
+                                        // Booleanos como checkbox
+                                        if (val === 'true' || val === 'false') {
+                                          return (
+                                            <div key={attr} className="flex items-center gap-2">
+                                              <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
+                                              <input
+                                                type="checkbox"
+                                                checked={(customAttrs[module.id]?.[attr] ?? val) === 'true'}
+                                                onChange={e => setCustomAttrs(prev => ({
+                                                  ...prev,
+                                                  [module.id]: { ...prev[module.id], [attr]: e.target.checked ? 'true' : 'false' }
+                                                }))}
+                                              />
+                                            </div>
+                                          );
+                                        }
+                                        // Por defecto, input de texto
+                                        return (
+                                          <div key={attr} className="flex items-center gap-2">
+                                            <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
+                                            <input
+                                              className="flex-1 border rounded px-2 py-1 text-xs"
+                                              type="text"
+                                              value={customAttrs[module.id]?.[attr] ?? val}
+                                              onChange={e => setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }))}
+                                            />
+                                          </div>
+                                        );
+                                      });
                                     }
-                                  });
-                                  return orderedAttrs.map(([attr, val]) => {
-                                    // Selector de idioma
-                                    if (attr === 'data-language') {
-                                      return (
-                                        <div key={attr} className="flex items-center gap-2">
-                                          <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
-                                          <select
-                                            className="flex-1 border rounded px-2 py-1 text-xs"
-                                            value={customAttrs[module.id]?.[attr] ?? val}
-                                            onChange={e => setCustomAttrs(prev => ({
-                                              ...prev,
-                                              [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                            }))}
-                                          >
-                                            <option value="es-ES">es-ES</option>
-                                            <option value="ca-ES">ca-ES</option>
-                                            <option value="gl-ES">gl-ES</option>
-                                          </select>
-                                        </div>
-                                      );
-                                    }
-                                    // Select para tipo
-                                    if (attr === 'data-energy-prices-type') {
-                                      return (
-                                        <div key={attr} className="flex items-center gap-2">
-                                          <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
-                                          <select
-                                            className="flex-1 border rounded px-2 py-1 text-xs"
-                                            value={customAttrs[module.id]?.[attr] ?? val}
-                                            onChange={e => setCustomAttrs(prev => ({
-                                              ...prev,
-                                              [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                            }))}
-                                          >
-                                            <option value="PVPC">PVPC</option>
-                                            <option value="OMIE">OMIE</option>
-                                          </select>
-                                        </div>
-                                      );
-                                    }
-                                    // Booleanos como checkbox
-                                    if (val === 'true' || val === 'false') {
+                                    // Para el resto de módulos, render normal
+                                    return Object.entries(attrs).map(([attr, val]) => {
+                                      if (attr === 'data-language') {
+                                        return (
+                                          <div key={attr} className="flex items-center gap-2">
+                                            <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
+                                            <select
+                                              className="flex-1 border rounded px-2 py-1 text-xs"
+                                              value={customAttrs[module.id]?.[attr] ?? val}
+                                              onChange={e => setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }))}
+                                            >
+                                              <option value="es-ES">es-ES</option>
+                                              <option value="ca-ES">ca-ES</option>
+                                              <option value="gl-ES">gl-ES</option>
+                                            </select>
+                                          </div>
+                                        );
+                                      }
+                                      if (module.id === 'energy-prices' && attr === 'data-energy-prices-type') {
+                                        return (
+                                          <div key={attr} className="flex items-center gap-2">
+                                            <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
+                                            <select
+                                              className="flex-1 border rounded px-2 py-1 text-xs"
+                                              value={customAttrs[module.id]?.[attr] ?? val}
+                                              onChange={e => setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }))}
+                                            >
+                                              <option value="PVPC">PVPC</option>
+                                              <option value="OMIE">OMIE</option>
+                                            </select>
+                                          </div>
+                                        );
+                                      }
+                                      if (val === 'true' || val === 'false') {
+                                        return (
+                                          <div key={attr} className="flex items-center gap-2">
+                                            <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
+                                            <input
+                                              type="checkbox"
+                                              checked={(customAttrs[module.id]?.[attr] ?? val) === 'true'}
+                                              onChange={e => setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.checked ? 'true' : 'false' }
+                                              }))}
+                                            />
+                                          </div>
+                                        );
+                                      }
                                       return (
                                         <div key={attr} className="flex items-center gap-2">
                                           <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
                                           <input
-                                            type="checkbox"
-                                            checked={(customAttrs[module.id]?.[attr] ?? val) === 'true'}
+                                            className="flex-1 border rounded px-2 py-1 text-xs"
+                                            type="text"
+                                            value={customAttrs[module.id]?.[attr] ?? val}
                                             onChange={e => setCustomAttrs(prev => ({
                                               ...prev,
-                                              [module.id]: { ...prev[module.id], [attr]: e.target.checked ? 'true' : 'false' }
+                                              [module.id]: { ...prev[module.id], [attr]: e.target.value }
                                             }))}
                                           />
                                         </div>
                                       );
-                                    }
-                                    // Por defecto, input de texto
-                                    return (
-                                      <div key={attr} className="flex items-center gap-2">
-                                        <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
-                                        <input
-                                          className="flex-1 border rounded px-2 py-1 text-xs"
-                                          type="text"
-                                          value={customAttrs[module.id]?.[attr] ?? val}
-                                          onChange={e => setCustomAttrs(prev => ({
-                                            ...prev,
-                                            [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                          }))}
-                                        />
-                                      </div>
-                                    );
-                                  });
-                                }
-                                // Para el resto de módulos, render normal
-                                return Object.entries(attrs).map(([attr, val]) => {
-                                  if (attr === 'data-language') {
-                                    return (
-                                      <div key={attr} className="flex items-center gap-2">
-                                        <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
-                                        <select
-                                          className="flex-1 border rounded px-2 py-1 text-xs"
-                                          value={customAttrs[module.id]?.[attr] ?? val}
-                                          onChange={e => setCustomAttrs(prev => ({
-                                            ...prev,
-                                            [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                          }))}
-                                        >
-                                          <option value="es-ES">es-ES</option>
-                                          <option value="ca-ES">ca-ES</option>
-                                          <option value="gl-ES">gl-ES</option>
-                                        </select>
-                                      </div>
-                                    );
-                                  }
-                                  if (module.id === 'energy-prices' && attr === 'data-energy-prices-type') {
-                                    return (
-                                      <div key={attr} className="flex items-center gap-2">
-                                        <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
-                                        <select
-                                          className="flex-1 border rounded px-2 py-1 text-xs"
-                                          value={customAttrs[module.id]?.[attr] ?? val}
-                                          onChange={e => setCustomAttrs(prev => ({
-                                            ...prev,
-                                            [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                          }))}
-                                        >
-                                          <option value="PVPC">PVPC</option>
-                                          <option value="OMIE">OMIE</option>
-                                        </select>
-                                      </div>
-                                    );
-                                  }
-                                  if (val === 'true' || val === 'false') {
-                                    return (
-                                      <div key={attr} className="flex items-center gap-2">
-                                        <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
-                                        <input
-                                          type="checkbox"
-                                          checked={(customAttrs[module.id]?.[attr] ?? val) === 'true'}
-                                          onChange={e => setCustomAttrs(prev => ({
-                                            ...prev,
-                                            [module.id]: { ...prev[module.id], [attr]: e.target.checked ? 'true' : 'false' }
-                                          }))}
-                                        />
-                                      </div>
-                                    );
-                                  }
-                                  return (
-                                    <div key={attr} className="flex items-center gap-2">
-                                      <label className="text-xs text-gray-500 w-40 truncate">{attr}</label>
-                                      <input
-                                        className="flex-1 border rounded px-2 py-1 text-xs"
-                                        type="text"
-                                        value={customAttrs[module.id]?.[attr] ?? val}
-                                        onChange={e => setCustomAttrs(prev => ({
-                                          ...prev,
-                                          [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                        }))}
-                                      />
-                                    </div>
-                                  );
-                                });
-                              })()}
+                                    });
+                                  })()}
+                                </div>
+                              )}
                             </div>
-                          )}
-                  </div>
-                      );
-                    })}
-                </div>
-                </div>
-              );
-            })}
-          </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </details>
         </div>
 
         {/* 2. Sección Accede a módulos privados (plegable, CTA) */}
         <div className="mb-6">
           <details className="border rounded-lg" open={!!token && !!houseId ? true : undefined}>
-            <summary className="px-4 py-3 text-base font-semibold cursor-pointer bg-green-50 border-b rounded-t-lg flex items-center gap-2">
+            <summary className="px-4 py-3 text-base font-semibold cursor-pointer bg-green-100 border-b rounded-t-lg flex items-center gap-2 select-none">
               <span role="img" aria-label="lock">🔒</span>
-              {(!token || !houseId) ? 'Acceder a módulos privados' : 'Módulos privados'}
+              <span>Privados ({totalPrivateModules})</span>
+              <svg className="ml-2 transition-transform group-open:rotate-90" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </summary>
             <div className="p-4">
               {/* Si ya hay token y houseId, muestra los módulos privados */}
@@ -1270,13 +1288,13 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                     return (
                       <div key={cat} className="mb-2 border rounded-lg">
                         <button
-                          className={`flex items-center w-full px-3 py-2 text-sm font-semibold gap-2 ${categoryInfo[cat]?.border || ''} ${categoryInfo[cat]?.iconBg || ''} rounded-t-lg focus:outline-none`}
+                          className={`flex items-center w-full px-3 py-2 text-sm font-semibold gap-2 ${categoryInfo[cat]?.border || ''} ${categoryInfo[cat]?.iconBg || ''} rounded-t-lg focus:outline-none select-none`}
                           style={{ background: openCategories[cat] ? '#f8fafc' : '#fff' }}
                           onClick={() => setOpenCategories(open => ({ ...open, [cat]: !open[cat] }))}
                         >
                           <span className={`w-6 h-6 flex items-center justify-center rounded-full ${categoryInfo[cat]?.iconBg}`}>{categoryInfo[cat]?.icon}</span>
-                          <span className="flex-1 text-left">{cat}</span>
-                          <span className="text-gray-400">{openCategories[cat] ? '▲' : '▼'}</span>
+                          <span className="flex-1 text-left">{cat} ({privateMods.length})</span>
+                          <svg className={`transition-transform ${openCategories[cat] ? 'rotate-90' : ''}`} width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         </button>
                         {openCategories[cat] && (
                           <div className="p-1 space-y-1 bg-white rounded-b-lg">
