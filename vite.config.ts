@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: '/clevergyBuilder/',
+  base: mode === 'production' ? '/clevergyBuilder/' : '/',
   plugins: [
     react(),
     mode === 'development' &&
