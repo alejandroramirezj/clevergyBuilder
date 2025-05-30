@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,28 +7,30 @@ import { AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
 
 const ClervergyModules = ({ module, preview = false }) => {
   const energyPricesRef = useRef(null);
+  const [isClevergyReady, setIsClevergyReady] = useState(false);
 
   useEffect(() => {
     if (preview && module.id === 'energy-prices') {
-      console.log('Clevergy energy prices component mounted in preview mode');
-      
-      // Esperar a que el web component esté definido
-      if (customElements.get('clevergy-energy-prices')) {
-        console.log('clevergy-energy-prices web component is available');
-      } else {
-        console.log('clevergy-energy-prices web component is not yet available, waiting...');
-        customElements.whenDefined('clevergy-energy-prices').then(() => {
-          console.log('clevergy-energy-prices web component is now available');
-          // Forzar re-render si es necesario
-          if (energyPricesRef.current) {
-            console.log('Web component should now be rendered');
-          }
-        });
-      }
+      const checkComponent = () => {
+        if (customElements.get('clevergy-energy-prices')) {
+          setIsClevergyReady(true);
+        } else {
+          customElements.whenDefined('clevergy-energy-prices').then(() => {
+            setIsClevergyReady(true);
+          });
+        }
+      };
+      checkComponent();
     }
   }, [preview, module.id]);
 
   const renderModule = () => {
+    // Si el módulo tiene htmlTag y estamos en preview, renderizar la etiqueta personalizada
+    if (preview && module.htmlTag) {
+      return (
+        <div className="w-full p-4 modulos-container" dangerouslySetInnerHTML={{ __html: module.htmlTag }} />
+      );
+    }
     switch (module.id) {
       case 'alert':
         return (
@@ -138,14 +140,18 @@ const ClervergyModules = ({ module, preview = false }) => {
 
       case 'energy-prices':
         if (preview) {
-          // En modo preview, renderizamos el web component real de Clevergy CON EL ATRIBUTO CORRECTO
+          if (!isClevergyReady) {
+            return <div className="w-full p-4 text-center text-gray-400">Cargando precios de energía...</div>;
+          }
           return (
             <div className="w-full p-4" ref={energyPricesRef}>
-              <clevergy-energy-prices data-show-energy-price-surplus="true"></clevergy-energy-prices>
+              <clevergy-energy-prices 
+                data-show-energy-price-surplus="true"
+                style={{ display: 'block', width: '100%', minHeight: '200px' }}
+              ></clevergy-energy-prices>
             </div>
           );
         } else {
-          // En modo edición, mostramos una representación visual
           return (
             <Card>
               <CardHeader>
