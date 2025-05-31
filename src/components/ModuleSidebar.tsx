@@ -3,6 +3,8 @@ import { Search, Plus, Zap, Trash2, Sun, Plug, Star, User, Lock, Info, Flame, Aw
 import { Input } from '@/components/ui/input';
 import ReactDOM from 'react-dom';
 import { useApiConsole } from './ApiConsoleContext';
+import HouseStatusIcons from './HouseStatusIcons';
+import { House, HouseDetail } from '@/types/house';
 
 // Estado para estilos globales
 const defaultStyles = {
@@ -247,7 +249,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     return initial;
   });
   const [email, setEmail] = useState("");
-  const [houses, setHouses] = useState([]);
+  const [houses, setHouses] = useState<House[]>([]);
   const [selectedHouseId, setSelectedHouseId] = useState("");
   const { logApiCall } = useApiConsole();
   // Estado para los dropdowns abiertos/cerrados
@@ -256,6 +258,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   const [emoji, setEmoji] = useState("");
   // Estado para mostrar el input de edición de emoji
   const [editingEmoji, setEditingEmoji] = useState(false);
+  const [houseDetails, setHouseDetails] = useState<Record<string, HouseDetail>>({});
 
   // Ejemplo de definición de módulos con categoría
   const allModules = [
@@ -787,6 +790,67 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     }
   };
 
+  const fetchHouseDetails = async (houseId: string) => {
+    try {
+      const detailUrl = `https://connect.clever.gy/houses/${houseId}/house-detail`;
+      const detailResp = await loggedFetch(detailUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'clevergy-api-key': apiKey
+        }
+      }, `🏠 Obteniendo detalles de la casa ${houseId}`);
+      
+      if (!detailResp.ok) {
+        console.error('Error al obtener detalles de la casa:', await detailResp.text());
+        return;
+      }
+
+      const detailData = await detailResp.json() as HouseDetail;
+      setHouseDetails(prev => ({
+        ...prev,
+        [houseId]: detailData
+      }));
+
+      // Imprimir en consola con el formato solicitado
+      console.log({
+        details: {
+          houseId: detailData.details?.houseId,
+          cups: detailData.details?.cups || null,
+          address: detailData.details?.address || null,
+        },
+        houseMetadata: {
+          firstDateEnergy: detailData.houseMetadata?.firstDateEnergy || null,
+          firstDatePower: detailData.houseMetadata?.firstDatePower || null,
+          firstDateCost: detailData.houseMetadata?.firstDateCost || null,
+          isOwner: detailData.houseMetadata?.isOwner || false
+        },
+        houseIntegrations: {
+          huaweiB2C: {
+            status: detailData.houseIntegrations?.huaweiB2C?.status || "NONE"
+          },
+          froniusB2C: {
+            status: detailData.houseIntegrations?.froniusB2C?.status || "NONE"
+          }
+        }
+      });
+      // Comentarios explicativos de cada campo
+      console.info('Explicación de los campos:');
+      console.info('details.houseId: ID único de la casa.');
+      console.info('details.cups: Código CUPS del suministro.');
+      console.info('details.address: Dirección de la casa.');
+      console.info('houseMetadata.firstDateEnergy: Fecha del primer dato de consumo. Si tiene valor, icono de rayo encendido ⚡');
+      console.info('houseMetadata.firstDatePower: Fecha del primer dato de producción. Si tiene valor, icono de sol encendido ☀️');
+      console.info('houseMetadata.firstDateCost: Fecha del primer dato de euros. Si tiene valor, icono de euro encendido €');
+      console.info('houseMetadata.isOwner: Si el usuario es propietario.');
+      console.info('houseIntegrations.huaweiB2C.status: Estado de integración Huawei. Si es ACTIVE/CONNECTED, icono enchufe encendido.');
+      console.info('houseIntegrations.froniusB2C.status: Estado de integración Fronius. Si es ACTIVE/CONNECTED, icono enchufe encendido.');
+    } catch (err) {
+      console.error('Error al obtener detalles de la casa:', err);
+    }
+  };
+
+  // Modificar fetchToken para obtener detalles de todas las casas
   const fetchToken = async () => {
     if (!apiKey || !email) {
       setError("Por favor, ingresa el API key y el email");
@@ -861,8 +925,16 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       }
       if (Array.isArray(housesData)) {
         setHouses(housesData);
+        // Obtener detalles de todas las casas
+        for (const house of housesData) {
+          await fetchHouseDetails(house.houseId);
+        }
       } else if (housesData.elements) {
         setHouses(housesData.elements);
+        // Obtener detalles de todas las casas
+        for (const house of housesData.elements) {
+          await fetchHouseDetails(house.houseId);
+        }
       } else {
         setError('No se encontraron casas para este usuario.');
         setIsLoading(false);
@@ -1447,18 +1519,25 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                       >
                         <option value="" disabled>Elige una casa...</option>
                         {houses.map((house) => (
-                          <option key={house.houseId} value={house.houseId}>
-                            {house.address ? `${house.address}` : house.houseId}
-                            {house.cups ? ` · ${house.cups}` : ''}
-                          </option>
+                            <option key={house.houseId} value={house.houseId}>
+                              {house.address ? `${house.address}` : house.houseId}
+                              {house.cups ? ` · ${house.cups}` : ''}
+                            </option>
                         ))}
                       </select>
-                      {selectedHouseId && (
-                        <div className="mt-2 text-xs text-gray-600 bg-white/50 rounded p-2 border border-teal-100 flex flex-col gap-1">
-                          <span><span className="font-semibold">Dirección:</span> {houses.find(h => h.houseId === selectedHouseId)?.address || selectedHouseId}</span>
-                          {houses.find(h => h.houseId === selectedHouseId)?.cups && (
-                            <span><span className="font-semibold">CUPS:</span> {houses.find(h => h.houseId === selectedHouseId)?.cups}</span>
-                          )}
+                      {selectedHouseId && houseDetails[selectedHouseId] && (
+                        <div className="mt-4">
+                          <div className="flex flex-col items-center w-full mb-1 px-2">
+                            <div className="flex items-center justify-center w-full gap-2">
+                              <span className="text-sm font-medium text-gray-600 text-center">Estado de la casa</span>
+                              <div className="flex-shrink-0">
+                                <HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyInfoIcon />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-center w-full mt-4">
+                            <HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyIcons />
+                          </div>
                         </div>
                       )}
                     </div>
