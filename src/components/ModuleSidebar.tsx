@@ -252,7 +252,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   const allModules = [
     {
       id: 'energy-prices',
-      name: 'energy-prices',
+      name: 'Precios de la energía',
       description: 'Precios de energía en tiempo real',
       auth: false,
       category: 'Energía',
@@ -260,7 +260,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'contract',
-      name: 'contract',
+      name: 'Generar un contrato',
       icon: Zap,
       description: 'Oportunidad de contrato Clevergy',
       auth: false,
@@ -269,7 +269,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'integration-shelly',
-      name: 'Shelly Integration',
+      name: 'Integración Shelly',
       icon: Zap,
       description: 'Integración con dispositivos Shelly',
       auth: true,
@@ -278,7 +278,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'smart-devices',
-      name: 'Smart Devices',
+      name: 'Dispositivos inteligentes',
       icon: Zap,
       description: 'Gestión de dispositivos inteligentes',
       auth: true,
@@ -287,7 +287,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'smart-devices-settings',
-      name: 'Smart Devices Settings',
+      name: 'Ajustes de dispositivos inteligentes',
       icon: Zap,
       description: 'Configuración de dispositivos inteligentes',
       auth: true,
@@ -296,7 +296,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'alerts-settings',
-      name: 'Alerts Settings',
+      name: 'Ajustes de avisos',
       icon: Zap,
       description: 'Configura tus avisos',
       auth: true,
@@ -311,7 +311,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'battery',
-      name: 'Battery',
+      name: 'Batería',
       icon: Zap,
       description: 'Batería',
       auth: true,
@@ -325,7 +325,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'breakdown',
-      name: 'Breakdown',
+      name: 'Desglose de consumo',
       icon: Zap,
       description: 'Desglose de consumo',
       auth: true,
@@ -343,7 +343,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'consumption-cumulative',
-      name: 'Consumption Cumulative',
+      name: 'Consumo acumulado',
       icon: Zap,
       description: 'Consumo acumulado',
       auth: true,
@@ -358,7 +358,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'energy-chart',
-      name: 'Energy Chart',
+      name: 'Gráfico de energía',
       icon: Zap,
       description: 'Gráfico de energía',
       auth: true,
@@ -378,7 +378,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'house-comparison',
-      name: 'House Comparison',
+      name: 'Comparativa de hogares',
       icon: Zap,
       description: 'Comparativa de hogares',
       auth: true,
@@ -396,7 +396,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'house-contract',
-      name: 'House Contract',
+      name: 'Contrato del hogar',
       icon: Zap,
       description: 'Contrato del hogar',
       auth: true,
@@ -409,7 +409,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'house-settings',
-      name: 'House Settings',
+      name: 'Configuración del hogar',
       icon: Zap,
       description: 'Configuración del hogar',
       auth: true,
@@ -422,7 +422,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'integration-fronius-b2c',
-      name: 'Integration Fronius B2C',
+      name: 'Integración Fronius B2C',
       icon: Zap,
       description: 'Integración Fronius B2C',
       auth: true,
@@ -436,7 +436,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'integration-huawei-b2c',
-      name: 'Integration Huawei B2C',
+      name: 'Integración Huawei B2C',
       icon: Zap,
       description: 'Integración Huawei B2C',
       auth: true,
@@ -452,7 +452,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'invoice-viewer',
-      name: 'Invoice Viewer',
+      name: 'Visor de facturas',
       icon: Zap,
       description: 'Visor de facturas',
       auth: true,
@@ -467,7 +467,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'power-chart',
-      name: 'Power Chart',
+      name: 'Gráfico de potencia',
       icon: Zap,
       description: 'Gráfico de potencia',
       auth: true,
@@ -481,7 +481,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'rate-recommender',
-      name: 'Rate Recommender',
+      name: 'Recomendador de tarifa',
       icon: Zap,
       description: 'Recomendador de tarifa',
       auth: true,
@@ -495,7 +495,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'recommendations',
-      name: 'Recommendations',
+      name: 'Recomendaciones',
       icon: Zap,
       description: 'Recomendaciones',
       auth: true,
@@ -509,7 +509,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'solar-amortization',
-      name: 'Solar Amortization',
+      name: 'Amortización solar',
       icon: Zap,
       description: 'Amortización solar',
       auth: true,
@@ -522,7 +522,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'solar-info',
-      name: 'Solar Info',
+      name: 'Información solar',
       icon: Zap,
       description: 'Información solar',
       auth: true,
@@ -535,7 +535,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'solar-real-time',
-      name: 'Solar Real Time',
+      name: 'Solar en tiempo real',
       icon: Zap,
       description: 'Solar en tiempo real',
       auth: true,
@@ -548,7 +548,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'solar-recommender',
-      name: 'Solar Recommender',
+      name: 'Recomendador solar',
       icon: Zap,
       description: 'Recomendador solar',
       auth: true,
@@ -561,7 +561,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'solar-summary',
-      name: 'Solar Summary',
+      name: 'Resumen solar',
       icon: Zap,
       description: 'Resumen solar',
       auth: true,
@@ -577,7 +577,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'tips-panel',
-      name: 'Tips Panel',
+      name: 'Panel de consejos',
       icon: Zap,
       description: 'Panel de consejos',
       auth: true,
@@ -590,7 +590,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     },
     {
       id: 'virtual-wallet',
-      name: 'Virtual Wallet',
+      name: 'Monedero virtual',
       icon: Zap,
       description: 'Monedero virtual',
       auth: true,
@@ -866,97 +866,6 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   return (
     <div className="w-96 h-screen bg-white border-r border-gray-200 flex flex-col">
       <div className="flex-1 overflow-y-auto p-4">
-        {/* 1. Autenticación - Ahora al principio */}
-        <div className="mb-6 bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl border border-teal-100 shadow-sm">
-          <div className="p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Lock size={18} className="text-teal-600" />
-              <h3 className="font-semibold text-gray-800">Autenticación</h3>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="Ingresa tu API key"
-                  />
-                  <button
-                    onClick={fetchToken}
-                    disabled={isLoading || !apiKey}
-                    className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200 whitespace-nowrap"
-                  >
-                    {isLoading ? 'Buscando...' : 'Continuar'}
-                  </button>
-                </div>
-              </div>
-              {apiKey && !token && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <div className="flex flex-wrap gap-2">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
-                      placeholder="Ingresa el email del usuario"
-                    />
-                    <button
-                      onClick={fetchToken}
-                      disabled={isLoading || !email}
-                      className="min-w-[120px] bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200"
-                      style={{ whiteSpace: 'nowrap' }}
-                    >
-                      {isLoading ? 'Buscando...' : 'Buscar casas'}
-                    </button>
-                  </div>
-                </div>
-              )}
-              {houses.length > 0 && (
-                <div className="mt-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Selecciona una casa:</label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-sm"
-                    value={selectedHouseId}
-                    onChange={e => handleSelectHouseAndGetToken(e.target.value)}
-                    disabled={isLoading}
-                  >
-                    <option value="" disabled>Elige una casa...</option>
-                    {houses.map((house) => (
-                      <option key={house.houseId} value={house.houseId}>
-                        {house.address ? `${house.address}` : house.houseId}
-                        {house.cups ? ` · ${house.cups}` : ''}
-                      </option>
-                    ))}
-                  </select>
-                  {selectedHouseId && (
-                    <div className="mt-2 text-xs text-gray-600 bg-white/50 rounded p-2 border border-teal-100 flex flex-col gap-1">
-                      <span><span className="font-semibold">Dirección:</span> {houses.find(h => h.houseId === selectedHouseId)?.address || selectedHouseId}</span>
-                      {houses.find(h => h.houseId === selectedHouseId)?.cups && (
-                        <span><span className="font-semibold">CUPS:</span> {houses.find(h => h.houseId === selectedHouseId)?.cups}</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-              {error && (
-                <div className="text-red-500 text-sm mt-2 bg-red-50 p-2 rounded border border-red-100">
-                  {error}
-                </div>
-              )}
-              {!token && (
-                <div className="text-amber-600 text-sm mt-2 bg-amber-50 p-2 rounded border border-amber-100 flex items-center gap-2">
-                  <Info size={16} />
-                  <span>Algunos módulos requieren autenticación. Sin ella, no podrás previsualizarlos.</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* 2. Personaliza tu apariencia */}
         <div className="mb-6">
       <div className="p-4 border-b border-gray-100 relative">
@@ -975,7 +884,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               let icon = null;
               if (s.name === 'Cangrejo Rosa') icon = <span role="img" aria-label="cangrejo" className="text-xl">🦀</span>;
               else if (s.name === 'Gas Naranja') icon = <Flame className="text-orange-500" size={18} />;
-              else if (s.name === 'Clevergy') icon = <img src="/favicon_clevergy.png" alt="Clevergy" className="w-5 h-5 inline-block align-middle rounded" />;
+              else if (s.name === 'Clevergy') icon = <img src={import.meta.env.BASE_URL + "favicon_clevergy.png"} alt="Clevergy" className="w-5 h-5 inline-block align-middle rounded" />;
               else icon = <Award className="text-gray-400" size={18} />;
               const isActive = JSON.stringify(stylesVars) === JSON.stringify(s.vars);
               const isEditable = !['Cangrejo Rosa', 'Gas Naranja', 'Clevergy'].includes(s.name) ? true : false;
@@ -1026,13 +935,24 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
           >
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-base font-semibold text-gray-800">Personaliza apariencia</h2>
-        <button
-                className="text-gray-400 hover:text-gray-700 text-lg"
-                onClick={() => setShowStyles(false)}
-                aria-label="Cerrar personalización"
-              >
-                ✕
-        </button>
+              <div className="flex gap-2">
+                {!["Clevergy", "Cangrejo Rosa", "Gas Naranja"].includes(styleName) && (
+                  <button
+                    className="text-red-500 hover:text-red-700 text-xs border border-red-200 rounded px-2 py-1 font-medium"
+                    onClick={() => { handleDeleteStyle(styleName); setShowStyles(false); }}
+                    title="Eliminar estilo"
+                  >
+                    Eliminar
+                  </button>
+                )}
+                <button
+                  className="text-gray-400 hover:text-gray-700 text-lg"
+                  onClick={() => setShowStyles(false)}
+                  aria-label="Cerrar personalización"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
             {/* Tipografía */}
             <div className="space-y-3">
@@ -1272,8 +1192,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                             >
                               <div className="flex items-center justify-between w-full gap-2">
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="font-medium text-gray-900 text-xs truncate">{module.name}</h4>
-                                  <p className="text-xs text-gray-600 line-clamp-1 truncate">{module.description}</p>
+                                  <h4 className="font-medium text-gray-900 text-xs truncate flex items-center gap-1">{module.name} <Tooltip text={module.description} /></h4>
                                 </div>
                                 <button
                                   className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
@@ -1403,65 +1322,139 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               <svg className="ml-2 transition-transform group-open:rotate-90" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </summary>
             <div className="p-4">
-              {!token && (
-                <div className="mb-4 text-amber-700 text-sm bg-amber-50 border border-amber-200 rounded p-3 flex items-start gap-2">
-                  <Info size={18} className="mt-0.5" />
-                  <span>
-                    Para poder visualizar estos módulos tienes que autenticarte.<br />
-                    Si no tienes tu API key, solicítala a <a href="mailto:customer@clever.gy" className="underline text-amber-800">customer@clever.gy</a>.
-                  </span>
+              {/* Bloque de autenticación aquí */}
+              <div className="mb-4 bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl border border-teal-100 shadow-sm p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Lock size={18} className="text-teal-600" />
+                  <h3 className="font-semibold text-gray-800">Autenticación</h3>
                 </div>
-              )}
-              {Object.entries(groupedModules).map(([cat, mods]) => {
-                const privateMods = Array.isArray(mods) ? mods.filter(m => m.auth) : [];
-                if (privateMods.length === 0) return null;
-                return (
-                  <div key={cat} className="mb-2 border rounded-lg">
-                    <button
-                      className={`flex items-center w-full px-3 py-2 text-sm font-semibold gap-2 ${categoryInfo[cat]?.border || ''} ${categoryInfo[cat]?.iconBg || ''} rounded-t-lg focus:outline-none select-none`}
-                      style={{ background: openCategories[cat] ? '#f8fafc' : '#fff' }}
-                      onClick={() => setOpenCategories(open => ({ ...open, [cat]: !open[cat] }))}
-                    >
-                      <span className={`w-6 h-6 flex items-center justify-center rounded-full ${categoryInfo[cat]?.iconBg}`}>{categoryInfo[cat]?.icon}</span>
-                      <span className="flex-1 text-left">{cat} ({privateMods.length})</span>
-                      <svg className={`transition-transform ${openCategories[cat] ? 'rotate-90' : ''}`} width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </button>
-                    {openCategories[cat] && (
-                      <div className="p-1 space-y-1 bg-white rounded-b-lg">
-                        {privateMods.map(module => {
-                          const attrs = extractAttrs(module.htmlTag);
-                          const showCustom = customAttrs[module.id]?.show || false;
-                          return (
-                            <div
-                              key={module.id}
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+                    <div className="flex flex-wrap gap-2">
+                      <input
+                        type="password"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                        placeholder="Ingresa tu API key"
+                        autoComplete="off"
+                      />
+                      <button
+                        onClick={fetchToken}
+                        disabled={isLoading || !apiKey}
+                        className="min-w-[120px] bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200 whitespace-nowrap"
+                        style={{ whiteSpace: 'nowrap' }}
+                      >
+                        {isLoading ? 'Buscando...' : 'Continuar'}
+                      </button>
+                    </div>
+                  </div>
+                  {apiKey && !token && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <div className="flex flex-wrap gap-2">
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                          placeholder="Ingresa el email del usuario"
+                        />
+                        <button
+                          onClick={fetchToken}
+                          disabled={isLoading || !email}
+                          className="min-w-[120px] bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200 whitespace-nowrap"
+                          style={{ whiteSpace: 'nowrap' }}
+                        >
+                          {isLoading ? 'Buscando...' : 'Buscar casas'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {houses.length > 0 && (
+                    <div className="mt-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Selecciona una casa:</label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-sm"
+                        value={selectedHouseId}
+                        onChange={e => handleSelectHouseAndGetToken(e.target.value)}
+                        disabled={isLoading}
+                      >
+                        <option value="" disabled>Elige una casa...</option>
+                        {houses.map((house) => (
+                          <option key={house.houseId} value={house.houseId}>
+                            {house.address ? `${house.address}` : house.houseId}
+                            {house.cups ? ` · ${house.cups}` : ''}
+                          </option>
+                        ))}
+                      </select>
+                      {selectedHouseId && (
+                        <div className="mt-2 text-xs text-gray-600 bg-white/50 rounded p-2 border border-teal-100 flex flex-col gap-1">
+                          <span><span className="font-semibold">Dirección:</span> {houses.find(h => h.houseId === selectedHouseId)?.address || selectedHouseId}</span>
+                          {houses.find(h => h.houseId === selectedHouseId)?.cups && (
+                            <span><span className="font-semibold">CUPS:</span> {houses.find(h => h.houseId === selectedHouseId)?.cups}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {error && (
+                    <div className="text-red-500 text-sm mt-2 bg-red-50 p-2 rounded border border-red-100">
+                      {error}
+                    </div>
+                  )}
+                </div>
+              </div>
+                  {Object.entries(groupedModules).map(([cat, mods]) => {
+                    const privateMods = Array.isArray(mods) ? mods.filter(m => m.auth) : [];
+                    if (privateMods.length === 0) return null;
+                    return (
+                      <div key={cat} className="mb-2 border rounded-lg">
+                        <button
+                          className={`flex items-center w-full px-3 py-2 text-sm font-semibold gap-2 ${categoryInfo[cat]?.border || ''} ${categoryInfo[cat]?.iconBg || ''} rounded-t-lg focus:outline-none select-none`}
+                          style={{ background: openCategories[cat] ? '#f8fafc' : '#fff' }}
+                          onClick={() => setOpenCategories(open => ({ ...open, [cat]: !open[cat] }))}
+                        >
+                          <span className={`w-6 h-6 flex items-center justify-center rounded-full ${categoryInfo[cat]?.iconBg}`}>{categoryInfo[cat]?.icon}</span>
+                          <span className="flex-1 text-left">{cat} ({privateMods.length})</span>
+                          <svg className={`transition-transform ${openCategories[cat] ? 'rotate-90' : ''}`} width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        </button>
+                        {openCategories[cat] && (
+                          <div className="p-1 space-y-1 bg-white rounded-b-lg">
+                            {privateMods.map(module => {
+                              const attrs = extractAttrs(module.htmlTag);
+                              const showCustom = customAttrs[module.id]?.show || false;
+                              return (
+                                <div
+                                  key={module.id}
                               className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group flex flex-col gap-1 ${!token ? 'opacity-50 pointer-events-none select-none' : 'cursor-grab hover:shadow-md transition-shadow'}`}
                               draggable={!!token}
                               onDragStart={token ? (e => handleDragStart(e, module)) : undefined}
-                              style={{ marginBottom: 4 }}
-                            >
-                              <div className="flex items-center justify-between w-full gap-2">
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-medium text-gray-900 text-xs truncate">{module.name}</h4>
-                                  <p className="text-xs text-gray-600 line-clamp-1 truncate">{module.description}</p>
-                                </div>
+                                  style={{ marginBottom: 4 }}
+                                >
+                                  <div className="flex items-center justify-between w-full gap-2">
+                                    <div className="flex-1 min-w-0">
+                                      <h4 className="font-medium text-gray-900 text-xs truncate flex items-center gap-1">{module.name} <Tooltip text={module.description} /></h4>
+                                    </div>
                                 {token && (
-                                  <button
-                                    className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      setCustomAttrs(prev => ({
-                                        ...prev,
-                                        [module.id]: { ...prev[module.id], show: !showCustom }
-                                      }));
-                                    }}
-                                    type="button"
-                                  >
-                                    {showCustom ? 'Ocultar' : 'Personalizar'}
-                                  </button>
+                                    <button
+                                      className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        setCustomAttrs(prev => ({
+                                          ...prev,
+                                          [module.id]: { ...prev[module.id], show: !showCustom }
+                                        }));
+                                      }}
+                                      type="button"
+                                    >
+                                      {showCustom ? 'Ocultar' : 'Personalizar'}
+                                    </button>
                                 )}
-                              </div>
+                                  </div>
                               {token && showCustom && (
-                                <div className="mt-2 space-y-2">
+                                    <div className="mt-2 space-y-2">
                                   {Object.entries(attrs).map(([attr, val]) => {
                                     // Determinar el tipo de input basado en el atributo y su valor
                                     const isBoolean = val === 'true' || val === 'false';

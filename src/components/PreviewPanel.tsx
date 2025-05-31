@@ -30,7 +30,7 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
   const [copied, setCopied] = useState({ style: false, html: false });
 
   const deviceSizes = {
-    desktop: { width: '1200px', height: '800px' },
+    desktop: { width: '700px', height: '800px' },
     mobile: { width: '375px', height: '667px' }
   };
 
@@ -247,7 +247,7 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
             </div>
           </div>
         ) : showCode ? (
-          <div className="flex w-full max-w-7xl mx-auto gap-[10px] items-start" style={{ minHeight: 400, height: 'calc(100vh - 120px)' }}>
+          <div className="flex mx-auto gap-[10px] items-start" style={{ minHeight: 400, height: 'calc(100vh - 120px)', maxWidth: 1200, width: '100%', paddingLeft: 24, paddingRight: 24, boxSizing: 'border-box' }}>
             <div style={{ ...moduleContainerStyle, height: '100%' }}>
               <style>{clevergyVarsBlock}</style>
               {modules.map((module, idx) => (
@@ -265,7 +265,7 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
               ))}
             </div>
             {/* Columna de código */}
-            <div className="flex-1 bg-gray-900 rounded-xl shadow overflow-auto" style={{ ...codeColStyle, height: '100%' }}>
+            <div className="flex-1 bg-gray-900 rounded-xl shadow overflow-auto" style={{ ...codeColStyle, height: '100%', marginRight: device === 'desktop' && showCode ? 24 : 0 }}>
               <pre className="w-full h-full rounded-lg p-4 text-xs overflow-auto shadow-lg" style={{minHeight: 200, height: '100%', background:'#181825', color:'#ECEFF1', fontFamily:'Fira Mono, monospace', fontSize:'13px', wordBreak: 'break-all', whiteSpace: 'pre-line', border: '1px solid #23272e', position: 'relative'}}>
                 <code style={{display: 'block', lineHeight: 1.7}} dangerouslySetInnerHTML={{__html: highlightedFullHtml}} />
                 <button
