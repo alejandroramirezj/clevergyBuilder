@@ -1224,12 +1224,12 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
         )}
       </div>
         </div>
-        {/* 2. Públicos */}
+        {/* 2. Sin autenticación */}
         <div className="mb-6">
           <details className="border rounded-lg" open>
             <summary className="px-4 py-3 text-base font-semibold cursor-pointer bg-blue-100 border-b rounded-t-lg flex items-center gap-2 select-none">
               <span role="img" aria-label="puzzle">🌐</span>
-              <span>Públicos ({modules.filter(m => !m.auth).length})</span>
+              <span>Sin autenticación ({modules.filter(m => !m.auth).length})</span>
               <svg className="ml-2 transition-transform group-open:rotate-90" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </summary>
             <div className="p-4">
@@ -1380,12 +1380,12 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
             </div>
           </details>
         </div>
-        {/* 3. Privados */}
+        {/* 3. Con autenticación */}
         <div className="mb-6">
           <details className="border rounded-lg" open={privadosDropdownOpen} onToggle={e => setPrivadosDropdownOpen((e.target as HTMLDetailsElement).open)}>
             <summary className="px-4 py-3 text-base font-semibold cursor-pointer bg-green-100 border-b rounded-t-lg flex items-center gap-2 select-none">
               <span role="img" aria-label="lock">🔒</span>
-              {`Privados (${totalPrivateModules})`}
+              {`Con autenticación (${totalPrivateModules})`}
               <svg className="ml-2 transition-transform group-open:rotate-90" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </summary>
             <div className="p-4">
