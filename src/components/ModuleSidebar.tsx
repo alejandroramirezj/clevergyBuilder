@@ -901,20 +901,18 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                     <span className="mr-2 flex items-center">{icon}</span>
                     <span className="truncate flex-1">{s.name}</span>
                     {/* Botón Ver estilo solo visible en hover, en la misma caja */}
-                    {isDefault && (
-                      <span
-                        className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition ml-auto cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
-                        style={{ fontWeight: 500 }}
-                        title="Abrir en la vista lateral"
-                        onClick={e => { e.stopPropagation(); setStylesVars({ ...s.vars }); setStyleName(s.name); setShowStyles(true); }}
-                        tabIndex={0}
-                        role="button"
-                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { setStylesVars({ ...s.vars }); setStyleName(s.name); setShowStyles(true); } }}
-                      >
-                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="#e5e7eb" stroke="#94a3b8" strokeWidth="1.5"/><rect x="5.5" y="6.5" width="5" height="11" rx="1" fill="#fff" stroke="#64748b" strokeWidth="1.2"/><rect x="12.5" y="6.5" width="6" height="11" rx="1" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1.2"/></svg>
-                        <span className="hidden sm:inline">Ver estilo</span>
-                      </span>
-                    )}
+                    <span
+                      className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition ml-auto cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
+                      style={{ fontWeight: 500 }}
+                      title="Abrir en la vista lateral"
+                      onClick={e => { e.stopPropagation(); setStylesVars({ ...s.vars }); setStyleName(s.name); setShowStyles(true); }}
+                      tabIndex={0}
+                      role="button"
+                      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { setStylesVars({ ...s.vars }); setStyleName(s.name); setShowStyles(true); } }}
+                    >
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="#e5e7eb" stroke="#94a3b8" strokeWidth="1.5"/><rect x="5.5" y="6.5" width="5" height="11" rx="1" fill="#fff" stroke="#64748b" strokeWidth="1.2"/><rect x="12.5" y="6.5" width="6" height="11" rx="1" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1.2"/></svg>
+                      <span className="hidden sm:inline">Ver estilo</span>
+                    </span>
                   </button>
                 </div>
               );
