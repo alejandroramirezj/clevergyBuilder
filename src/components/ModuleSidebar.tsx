@@ -204,7 +204,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     "Energía",
     "Solar",
     "Integraciones",
-    "Leads"
+    "Leads",
+    "Comercializadora"
   ];
   const [categoryFilter, setCategoryFilter] = useState(allCategories);
   const [search, setSearch] = useState("");
@@ -399,7 +400,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       icon: Zap,
       description: 'Contrato del hogar',
       auth: true,
-      category: 'Energía',
+      category: 'Comercializadora',
       htmlTag: `<clevergy-house-contract
         data-token="${token}"
         data-house-id="${houseId}"
@@ -450,20 +451,12 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       />`
     },
     {
-      id: 'integration-shelly-otro',
-      name: 'Shelly Integration',
-      description: 'Integración con dispositivos Shelly',
-      auth: true,
-      category: 'Integraciones',
-      htmlTag: `<clevergy-integration-shelly data-token="${token}" data-house-id="${houseId}" data-language="es-ES"></clevergy-integration-shelly>`
-    },
-    {
       id: 'invoice-viewer',
       name: 'Invoice Viewer',
       icon: Zap,
       description: 'Visor de facturas',
       auth: true,
-      category: 'Energía',
+      category: 'Comercializadora',
       htmlTag: `<clevergy-invoice-viewer
         data-token="${token}"
         data-house-id="${houseId}"
@@ -478,7 +471,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       icon: Zap,
       description: 'Gráfico de potencia',
       auth: true,
-      category: 'Energía',
+      category: 'Solar',
       htmlTag: `<clevergy-power-chart
         data-token="${token}"
         data-house-id="${houseId}"
@@ -492,7 +485,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       icon: Zap,
       description: 'Recomendador de tarifa',
       auth: true,
-      category: 'Energía',
+      category: 'Leads',
       htmlTag: `<clevergy-rate-recommender
         data-token="${token}"
         data-house-id="${houseId}"
@@ -559,7 +552,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       icon: Zap,
       description: 'Recomendador solar',
       auth: true,
-      category: 'Solar',
+      category: 'Leads',
       htmlTag: `<clevergy-solar-recommender
         data-token="${token}"
         data-house-id="${houseId}"
@@ -601,7 +594,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       icon: Zap,
       description: 'Monedero virtual',
       auth: true,
-      category: 'Energía',
+      category: 'Comercializadora',
       htmlTag: `<clevergy-virtual-wallet
         data-token="${token}"
         data-house-id="${houseId}"
@@ -670,7 +663,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     "Energía": { icon: <Zap size={18} />, iconBg: "bg-yellow-100", border: "border-yellow-300", chip: "focus:ring-yellow-300" },
     "Solar": { icon: <Sun size={18} />, iconBg: "bg-orange-100", border: "border-orange-300", chip: "focus:ring-orange-300" },
     "Integraciones": { icon: <Plug size={18} />, iconBg: "bg-gray-200", border: "border-gray-300", chip: "focus:ring-gray-300" },
-    "Leads": { icon: <Star size={18} />, iconBg: "bg-blue-100", border: "border-blue-300", chip: "focus:ring-blue-300" }
+    "Leads": { icon: <Star size={18} />, iconBg: "bg-blue-100", border: "border-blue-300", chip: "focus:ring-blue-300" },
+    "Comercializadora": { icon: <User size={18} />, iconBg: "bg-green-100", border: "border-green-300", chip: "focus:ring-green-300" }
   };
 
   // Inyectar estilos en el documento principal
