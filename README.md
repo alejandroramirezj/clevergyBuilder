@@ -33,7 +33,7 @@ Con el Builder puedes crear y personalizar módulos de energía de forma visual,
 6. 🧩 **Ver el código HTML generado**
    - Obtén el código HTML listo para copiar y pegar en tu proyecto, ¡así de fácil!
 
-![Demostración del Builder](./dist/clevergyBuilder_demostration.png)
+![Demostración del Builder](./public/clevergyBuilder_demostration.png)
 
 ---
 
