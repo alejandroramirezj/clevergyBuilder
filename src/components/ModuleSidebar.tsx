@@ -866,7 +866,84 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   return (
     <div className="w-96 h-screen bg-white border-r border-gray-200 flex flex-col">
       <div className="flex-1 overflow-y-auto p-4">
-        {/* 1. Personaliza tu apariencia */}
+        {/* 1. Autenticación - Ahora al principio */}
+        <div className="mb-6 bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl border border-teal-100 shadow-sm">
+          <div className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Lock size={18} className="text-teal-600" />
+              <h3 className="font-semibold text-gray-800">Autenticación</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+                <input
+                  type="text"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                  placeholder="Ingresa tu API key"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                  placeholder="Ingresa el email del usuario"
+                />
+              </div>
+              <button
+                onClick={fetchToken}
+                disabled={isLoading}
+                className="w-full bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200"
+              >
+                {isLoading ? 'Buscando casas...' : 'Buscar casas del usuario'}
+              </button>
+              {houses.length > 0 && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Selecciona una casa:</label>
+                  <select
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-sm"
+                    value={selectedHouseId}
+                    onChange={e => handleSelectHouseAndGetToken(e.target.value)}
+                    disabled={isLoading}
+                  >
+                    <option value="" disabled>Elige una casa...</option>
+                    {houses.map((house) => (
+                      <option key={house.houseId} value={house.houseId}>
+                        {house.address ? `${house.address}` : house.houseId}
+                        {house.cups ? ` · ${house.cups}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedHouseId && (
+                    <div className="mt-2 text-xs text-gray-600 bg-white/50 rounded p-2 border border-teal-100 flex flex-col gap-1">
+                      <span><span className="font-semibold">Dirección:</span> {houses.find(h => h.houseId === selectedHouseId)?.address || selectedHouseId}</span>
+                      {houses.find(h => h.houseId === selectedHouseId)?.cups && (
+                        <span><span className="font-semibold">CUPS:</span> {houses.find(h => h.houseId === selectedHouseId)?.cups}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+              {error && (
+                <div className="text-red-500 text-sm mt-2 bg-red-50 p-2 rounded border border-red-100">
+                  {error}
+                </div>
+              )}
+              {!token && (
+                <div className="text-amber-600 text-sm mt-2 bg-amber-50 p-2 rounded border border-amber-100 flex items-center gap-2">
+                  <Info size={16} />
+                  <span>Algunos módulos requieren autenticación. Sin ella, no podrás previsualizarlos.</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Personaliza tu apariencia */}
         <div className="mb-6">
       <div className="p-4 border-b border-gray-100 relative">
         <div className="flex items-center justify-between cursor-pointer select-none" onClick={() => setShowExamples(v => !v)}>
@@ -1303,93 +1380,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
             </div>
           </details>
         </div>
-        {/* 3. Autenticación */}
-        <div className="mb-6">
-          <details className="border rounded-lg" open={authDropdownOpen} onToggle={e => setAuthDropdownOpen((e.target as HTMLDetailsElement).open)}>
-            <summary className="px-4 py-3 text-base font-semibold cursor-pointer bg-teal-100 border-b rounded-t-lg flex items-center gap-2 select-none">
-              <span role="img" aria-label="key">🔑</span>
-              <span>Autenticación</span>
-              <svg className="ml-2 transition-transform group-open:rotate-90" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#14b8a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </summary>
-            <div className="p-4">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                                            <input
-                                              type="text"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="Ingresa tu API key"
-                                            />
-                                          </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                            <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="Ingresa el email del usuario"
-                                            />
-                                          </div>
-                <button
-                  onClick={fetchToken}
-                  disabled={isLoading}
-                  className="w-full bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
-                >
-                  {isLoading ? 'Buscando casas...' : 'Buscar casas del usuario'}
-                </button>
-                {houses.length > 0 && (
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Selecciona una casa:</label>
-                    <select
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-sm"
-                      value={selectedHouseId}
-                      onChange={e => handleSelectHouseAndGetToken(e.target.value)}
-                      disabled={isLoading}
-                    >
-                      <option value="" disabled>Elige una casa...</option>
-                      {houses.map((house) => (
-                        <option key={house.houseId} value={house.houseId}>
-                          {house.address ? `${house.address}` : house.houseId}
-                          {house.cups ? ` · ${house.cups}` : ''}
-                        </option>
-                      ))}
-                    </select>
-                    {selectedHouseId && (
-                      <div className="mt-2 text-xs text-gray-600 bg-gray-50 rounded p-2 border border-gray-100 flex flex-col gap-1">
-                        <span><span className="font-semibold">Dirección:</span> {houses.find(h => h.houseId === selectedHouseId)?.address || selectedHouseId}</span>
-                        {houses.find(h => h.houseId === selectedHouseId)?.cups && (
-                          <span><span className="font-semibold">CUPS:</span> {houses.find(h => h.houseId === selectedHouseId)?.cups}</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-                {error && (
-                  <div className="text-red-500 text-sm mt-2">
-                    {error}
-                            </div>
-                )}
-                      </div>
-              {/* Campos de autenticación */}
-              {/*
-              <div className="space-y-3 mt-4">
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">houseid</label>
-                  <Input value={houseId} onChange={e => setHouseId(e.target.value)} className="bg-gray-50 border-0 focus:bg-white text-sm" placeholder="Ingresa el houseid" />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">Token</label>
-                  <Input value={token} onChange={e => setToken(e.target.value)} className="bg-gray-50 border-0 focus:bg-white text-sm" placeholder="Ingresa el token" />
-                </div>
-              </div>
-              */}
-            </div>
-          </details>
-        </div>
-        {/* 4. Privados */}
+        {/* 3. Privados */}
         <div className="mb-6">
           <details className="border rounded-lg" open={privadosDropdownOpen} onToggle={e => setPrivadosDropdownOpen((e.target as HTMLDetailsElement).open)}>
             <summary className="px-4 py-3 text-base font-semibold cursor-pointer bg-green-100 border-b rounded-t-lg flex items-center gap-2 select-none">
