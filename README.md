@@ -1,58 +1,22 @@
-# Welcome to your Lovable project
+# Clevergy Microfrontend Builder Demo
 
-## Project info
+Este proyecto demuestra lo sencillo que es implementar y utilizar los microfrontends de Clevergy en tu aplicación. Es un ejemplo práctico que muestra cómo integrar componentes de Clevergy de manera rápida y eficiente.
 
-**URL**: https://lovable.dev/projects/7d7b46ed-2dbb-44e0-aaa2-491cee078c4f
+## 🚀 Demo en vivo
 
-## How can I edit this code?
+Puedes ver una demostración en vivo de este proyecto aquí:
+[Demo Clevergy Builder](https://alejandroramirezj.github.io/clevergyBuilder/)
 
-There are several ways of editing your application.
+## 📚 Documentación
 
-**Use Lovable**
+Para más información sobre Clevergy y sus servicios, visita:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7d7b46ed-2dbb-44e0-aaa2-491cee078c4f) and start prompting.
+- [Documentación de Clevergy](https://docs.clever.gy)
+- [Portal de Conexión de Clevergy](https://connect.clever.gy)
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ Tecnologías Utilizadas
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
+Este proyecto está construido con:
 
 - Vite
 - TypeScript
@@ -60,14 +24,34 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+## 🚀 Cómo Empezar
 
-Simply open [Lovable](https://lovable.dev/projects/7d7b46ed-2dbb-44e0-aaa2-491cee078c4f) and click on Share -> Publish.
+1. Clona este repositorio:
+```sh
+git clone https://github.com/alejandroramirezj/clevergy-drag-drop-builder.git
+```
 
-## Can I connect a custom domain to my Lovable project?
+2. Instala las dependencias:
+```sh
+npm install
+```
 
-Yes, you can!
+3. Inicia el servidor de desarrollo:
+```sh
+npm run dev
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🎯 Características
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- Implementación de microfrontends de Clevergy
+- Interfaz de usuario moderna y responsiva
+- Componentes reutilizables
+- Fácil integración con aplicaciones existentes
+
+## 🤝 Contribuir
+
+Las contribuciones son bienvenidas. Por favor, abre un issue primero para discutir los cambios que te gustaría hacer.
+
+## 📝 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
