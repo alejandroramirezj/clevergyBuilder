@@ -9,6 +9,34 @@ Puedes ver una demostración en vivo de este proyecto aquí:
 
 ![Demo Clevergy Builder](./public/clevergyBuilder.png)
 
+---
+
+## ✨ ¿Qué puedes hacer con el Builder de Clevergy?
+
+Con el Builder puedes crear y personalizar módulos de energía de forma visual, sencilla y divertida. Aquí tienes todo lo que puedes hacer:
+
+1. 👀 **Visualizar los módulos públicos**
+   - Explora todos los módulos que no requieren autenticación, listos para usar.
+
+2. 🛠️ **Personalizar los módulos**
+   - Cambia atributos y opciones, por ejemplo: mostrar la línea de precios excedentes, ocultar detalles, etc.
+
+3. 🎨 **Personalizar colores y estilos**
+   - Adapta los módulos a tu marca cambiando colores, fuentes y estilos para que encajen perfectamente en tu web.
+
+4. 🔒 **Visualizar módulos privados**
+   - Descubre los módulos que requieren autenticación del usuario para ser personalizados e integrados.
+
+5. 🖥️ **Ver las peticiones al API de Connect**
+   - Observa en la consola todas las peticiones que se hacen al API de Connect para entender cómo funciona la integración.
+
+6. 🧩 **Ver el código HTML generado**
+   - Obtén el código HTML listo para copiar y pegar en tu proyecto, ¡así de fácil!
+
+![Demostración del Builder](./dist/clevergyBuilder_demostration.png)
+
+---
+
 ## 📚 Documentación
 
 Para más información sobre Clevergy y sus servicios, visita:
