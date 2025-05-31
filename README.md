@@ -7,6 +7,8 @@ Este proyecto demuestra lo sencillo que es implementar y utilizar los microfront
 Puedes ver una demostración en vivo de este proyecto aquí:
 [Demo Clevergy Builder](https://alejandroramirezj.github.io/clevergyBuilder/)
 
+![Demo Clevergy Builder](./public/clevergyBuilder.png)
+
 ## 📚 Documentación
 
 Para más información sobre Clevergy y sus servicios, visita:
