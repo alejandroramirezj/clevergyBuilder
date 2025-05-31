@@ -873,37 +873,51 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               <Lock size={18} className="text-teal-600" />
               <h3 className="font-semibold text-gray-800">Autenticación</h3>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                <input
-                  type="text"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
-                  placeholder="Ingresa tu API key"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                    placeholder="Ingresa tu API key"
+                  />
+                  <button
+                    onClick={fetchToken}
+                    disabled={isLoading || !apiKey}
+                    className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200 whitespace-nowrap"
+                  >
+                    {isLoading ? 'Buscando...' : 'Continuar'}
+                  </button>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
-                  placeholder="Ingresa el email del usuario"
-                />
-              </div>
-              <button
-                onClick={fetchToken}
-                disabled={isLoading}
-                className="w-full bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200"
-              >
-                {isLoading ? 'Buscando casas...' : 'Buscar casas del usuario'}
-              </button>
+              {apiKey && !token && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <div className="flex flex-wrap gap-2">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                      placeholder="Ingresa el email del usuario"
+                    />
+                    <button
+                      onClick={fetchToken}
+                      disabled={isLoading || !email}
+                      className="min-w-[120px] bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200"
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      {isLoading ? 'Buscando...' : 'Buscar casas'}
+                    </button>
+                  </div>
+                </div>
+              )}
               {houses.length > 0 && (
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Selecciona una casa:</label>
+                <div className="mt-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Selecciona una casa:</label>
                   <select
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-sm"
                     value={selectedHouseId}
