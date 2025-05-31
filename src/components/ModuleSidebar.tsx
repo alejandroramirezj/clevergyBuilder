@@ -192,6 +192,12 @@ const defaultSavedStyles = [
   { name: 'Gas Naranja', vars: naturgyPalette },
 ];
 
+// Lista de emojis para estilos personalizados
+const EMOJIS = ["🦄", "🌈", "🚀", "✨", "🎨", "🔥", "🌟", "🍀", "🧩", "🎉", "🦋", "🧸", "🪐", "🌻", "🍉", "🦕", "🦩", "🦚", "🦜", "🦔", "🦦", "🦥", "🦭", "🦨", "🦡", "🦢", "🦩", "🦚", "🦜", "🦔", "🦦", "🦥", "🦭", "🦨", "🦡", "🦢"];
+function getRandomEmoji() {
+  return EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+}
+
 const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars }) => {
   const [houseId, setHouseId] = useState("");
   const [token, setToken] = useState("");
@@ -247,6 +253,9 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   // Estado para los dropdowns abiertos/cerrados
   const [authDropdownOpen, setAuthDropdownOpen] = useState(false); // cerrado por defecto
   const [privadosDropdownOpen, setPrivadosDropdownOpen] = useState(false); // cerrado por defecto
+  const [emoji, setEmoji] = useState("");
+  // Estado para mostrar el input de edición de emoji
+  const [editingEmoji, setEditingEmoji] = useState(false);
 
   // Ejemplo de definición de módulos con categoría
   const allModules = [
@@ -690,9 +699,19 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       setTimeout(() => setFeedback(''), 1200);
       return;
     }
+    let newEmoji = emoji;
+    // Si es un estilo nuevo y no tiene emoji, asignar uno aleatorio
+    const existing = savedStyles.find(s => s.name === styleName.trim());
+    if (!existing && !emoji) {
+      newEmoji = getRandomEmoji();
+      setEmoji(newEmoji);
+    } else if (existing && !emoji && existing.emoji) {
+      newEmoji = existing.emoji;
+      setEmoji(newEmoji);
+    }
     const newStyles = [
       ...savedStyles.filter(s => s.name !== styleName.trim()),
-      { name: styleName.trim(), vars: { ...stylesVars } }
+      { name: styleName.trim(), vars: { ...stylesVars }, emoji: newEmoji }
     ];
     setSavedStyles(newStyles);
     localStorage.setItem('clevergy-saved-styles', JSON.stringify(newStyles));
@@ -701,8 +720,9 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   };
 
   // Función para cargar un estilo guardado
-  const handleLoadStyle = (vars) => {
+  const handleLoadStyle = (vars, emoji) => {
     setStylesVars({ ...vars });
+    setEmoji(emoji || "");
     setFeedback('¡Estilo cargado!');
     setTimeout(() => setFeedback(''), 1200);
   };
@@ -894,11 +914,11 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                   <span className="text-xs text-gray-400 w-4 text-right">{idx + 1}.</span>
                   <button
                     className={`flex-1 text-left px-2 py-1 text-xs rounded-lg border border-gray-200 transition-colors flex items-center gap-2 ${isActive ? 'bg-gray-200 font-bold text-blue-700' : 'bg-white hover:bg-blue-50'}`}
-                    onClick={() => handleLoadStyle(s.vars)}
+                    onClick={() => handleLoadStyle(s.vars, s.emoji)}
                     title="Cargar estilo"
                     style={{ outline: 'none', display: 'flex', alignItems: 'center', width: '100%' }}
                   >
-                    <span className="mr-2 flex items-center">{icon}</span>
+                    <span className="mr-2 flex items-center">{s.emoji ? <span className="text-xl">{s.emoji}</span> : icon}</span>
                     <span className="truncate flex-1">{s.name}</span>
                     {/* Botón Ver estilo solo visible en hover, en la misma caja */}
                     <span
@@ -1112,14 +1132,37 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                 {/* Guardar estilo si hay cambios */}
             {JSON.stringify(stylesVars) !== JSON.stringify(defaultStyles) && (
               <div className="flex w-full gap-2 mt-2">
-              <input
-                type="text"
+              <div className="flex items-center gap-2 w-full">
+                <span
+                  className="cursor-pointer select-none text-lg"
+                  style={{ minWidth: 24 }}
+                  title="Editar emoji"
+                  onClick={() => setEditingEmoji(true)}
+                >
+                  {emoji || "🦄"}
+                </span>
+                <input
+                  type="text"
                   className="flex-1 text-xs border rounded-lg px-2 py-1 bg-gray-50"
                   placeholder="Nombre del estilo (ej: Clevergy, Octopus...)"
                   value={styleName}
                   onChange={e => setStyleName(e.target.value)}
                   maxLength={32}
+                  style={{ minWidth: 0 }}
                 />
+                {editingEmoji && (
+                  <input
+                    type="text"
+                    className="w-8 text-center text-lg border rounded-lg px-1 py-0.5 bg-gray-50 ml-1"
+                    maxLength={2}
+                    value={emoji}
+                    autoFocus
+                    onBlur={() => setEditingEmoji(false)}
+                    onChange={e => setEmoji(e.target.value)}
+                    style={{ minWidth: 24 }}
+                  />
+                )}
+              </div>
                 <button
                   className="px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-all active:scale-95 active:shadow-inner focus:ring-2 focus:ring-green-300"
                   onClick={handleSaveStyle}
@@ -1135,14 +1178,37 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
             )}
             {!["Clevergy", "Cangrejo Rosa", "Gas Naranja"].includes(styleName) && (
               <div className="flex flex-col gap-2 mt-6 border-t pt-4">
-              <input
-                type="text"
-                  className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+              <div className="flex items-center gap-2 w-full">
+                <span
+                  className="cursor-pointer select-none text-lg"
+                  style={{ minWidth: 24 }}
+                  title="Editar emoji"
+                  onClick={() => setEditingEmoji(true)}
+                >
+                  {emoji || "🦄"}
+                </span>
+                <input
+                  type="text"
+                  className="flex-1 text-xs border rounded-lg px-2 py-1 bg-gray-50"
                   placeholder="Nombre del estilo"
                   value={styleName}
                   onChange={e => setStyleName(e.target.value)}
                   maxLength={32}
-              />
+                  style={{ minWidth: 0 }}
+                />
+                {editingEmoji && (
+                  <input
+                    type="text"
+                    className="w-8 text-center text-lg border rounded-lg px-1 py-0.5 bg-gray-50 ml-1"
+                    maxLength={2}
+                    value={emoji}
+                    autoFocus
+                    onBlur={() => setEditingEmoji(false)}
+                    onChange={e => setEmoji(e.target.value)}
+                    style={{ minWidth: 24 }}
+                  />
+                )}
+              </div>
             <button
                   className="px-4 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all active:scale-95 active:shadow-inner focus:ring-2 focus:ring-blue-300"
                   style={{ minWidth: 80 }}
