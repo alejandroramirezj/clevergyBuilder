@@ -884,7 +884,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               let icon = null;
               if (s.name === 'Cangrejo Rosa') icon = <span role="img" aria-label="cangrejo" className="text-xl">🦀</span>;
               else if (s.name === 'Gas Naranja') icon = <Flame className="text-orange-500" size={18} />;
-              else if (s.name === 'Clevergy') icon = <img src="dist/favicon%20clevergy.png" alt="Clevergy" className="w-5 h-5 inline-block align-middle rounded" />;
+              else if (s.name === 'Clevergy') icon = <img src="/favicon_clevergy.png" alt="Clevergy" className="w-5 h-5 inline-block align-middle rounded" />;
               else icon = <Award className="text-gray-400" size={18} />;
               const isActive = JSON.stringify(stylesVars) === JSON.stringify(s.vars);
               const isEditable = !['Cangrejo Rosa', 'Gas Naranja', 'Clevergy'].includes(s.name) ? true : false;

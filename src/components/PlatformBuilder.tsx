@@ -58,7 +58,7 @@ const PlatformBuilder = () => {
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <img
-                    src="/favicon%20clevergy.png"
+                    src="/favicon_clevergy.png"
                     alt="Clevergy logo"
                     className="w-8 h-8 rounded-lg object-cover bg-white border border-gray-200"
                   />
