@@ -1403,55 +1403,65 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               <svg className="ml-2 transition-transform group-open:rotate-90" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </summary>
             <div className="p-4">
-              {/* Mostrar siempre los módulos privados, aunque no haya token ni houseId */}
-                  {Object.entries(groupedModules).map(([cat, mods]) => {
-                    const privateMods = Array.isArray(mods) ? mods.filter(m => m.auth) : [];
-                    if (privateMods.length === 0) return null;
-                    return (
-                      <div key={cat} className="mb-2 border rounded-lg">
-                        <button
-                          className={`flex items-center w-full px-3 py-2 text-sm font-semibold gap-2 ${categoryInfo[cat]?.border || ''} ${categoryInfo[cat]?.iconBg || ''} rounded-t-lg focus:outline-none select-none`}
-                          style={{ background: openCategories[cat] ? '#f8fafc' : '#fff' }}
-                          onClick={() => setOpenCategories(open => ({ ...open, [cat]: !open[cat] }))}
-                        >
-                          <span className={`w-6 h-6 flex items-center justify-center rounded-full ${categoryInfo[cat]?.iconBg}`}>{categoryInfo[cat]?.icon}</span>
-                          <span className="flex-1 text-left">{cat} ({privateMods.length})</span>
-                          <svg className={`transition-transform ${openCategories[cat] ? 'rotate-90' : ''}`} width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        </button>
-                        {openCategories[cat] && (
-                          <div className="p-1 space-y-1 bg-white rounded-b-lg">
-                            {privateMods.map(module => {
-                              const attrs = extractAttrs(module.htmlTag);
-                              const showCustom = customAttrs[module.id]?.show || false;
-                              return (
-                                <div
-                                  key={module.id}
-                                  className="relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group cursor-grab hover:shadow-md transition-shadow flex flex-col gap-1"
-                                  draggable
-                                  onDragStart={e => handleDragStart(e, module)}
-                                  style={{ marginBottom: 4 }}
-                                >
-                                  <div className="flex items-center justify-between w-full gap-2">
-                                    <div className="flex-1 min-w-0">
-                                      <h4 className="font-medium text-gray-900 text-xs truncate">{module.name}</h4>
-                                      <p className="text-xs text-gray-600 line-clamp-1 truncate">{module.description}</p>
-                                    </div>
-                                    <button
-                                      className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
-                                      onClick={e => {
-                                        e.stopPropagation();
-                                        setCustomAttrs(prev => ({
-                                          ...prev,
-                                          [module.id]: { ...prev[module.id], show: !showCustom }
-                                        }));
-                                      }}
-                                      type="button"
-                                    >
-                                      {showCustom ? 'Ocultar' : 'Personalizar'}
-                                    </button>
-                                  </div>
-                {showCustom && (
-                                    <div className="mt-2 space-y-2">
+              {!token && (
+                <div className="mb-4 text-amber-700 text-sm bg-amber-50 border border-amber-200 rounded p-3 flex items-start gap-2">
+                  <Info size={18} className="mt-0.5" />
+                  <span>
+                    Para poder visualizar estos módulos tienes que autenticarte.<br />
+                    Si no tienes tu API key, solicítala a <a href="mailto:customer@clever.gy" className="underline text-amber-800">customer@clever.gy</a>.
+                  </span>
+                </div>
+              )}
+              {Object.entries(groupedModules).map(([cat, mods]) => {
+                const privateMods = Array.isArray(mods) ? mods.filter(m => m.auth) : [];
+                if (privateMods.length === 0) return null;
+                return (
+                  <div key={cat} className="mb-2 border rounded-lg">
+                    <button
+                      className={`flex items-center w-full px-3 py-2 text-sm font-semibold gap-2 ${categoryInfo[cat]?.border || ''} ${categoryInfo[cat]?.iconBg || ''} rounded-t-lg focus:outline-none select-none`}
+                      style={{ background: openCategories[cat] ? '#f8fafc' : '#fff' }}
+                      onClick={() => setOpenCategories(open => ({ ...open, [cat]: !open[cat] }))}
+                    >
+                      <span className={`w-6 h-6 flex items-center justify-center rounded-full ${categoryInfo[cat]?.iconBg}`}>{categoryInfo[cat]?.icon}</span>
+                      <span className="flex-1 text-left">{cat} ({privateMods.length})</span>
+                      <svg className={`transition-transform ${openCategories[cat] ? 'rotate-90' : ''}`} width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </button>
+                    {openCategories[cat] && (
+                      <div className="p-1 space-y-1 bg-white rounded-b-lg">
+                        {privateMods.map(module => {
+                          const attrs = extractAttrs(module.htmlTag);
+                          const showCustom = customAttrs[module.id]?.show || false;
+                          return (
+                            <div
+                              key={module.id}
+                              className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group flex flex-col gap-1 ${!token ? 'opacity-50 pointer-events-none select-none' : 'cursor-grab hover:shadow-md transition-shadow'}`}
+                              draggable={!!token}
+                              onDragStart={token ? (e => handleDragStart(e, module)) : undefined}
+                              style={{ marginBottom: 4 }}
+                            >
+                              <div className="flex items-center justify-between w-full gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-gray-900 text-xs truncate">{module.name}</h4>
+                                  <p className="text-xs text-gray-600 line-clamp-1 truncate">{module.description}</p>
+                                </div>
+                                {token && (
+                                  <button
+                                    className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      setCustomAttrs(prev => ({
+                                        ...prev,
+                                        [module.id]: { ...prev[module.id], show: !showCustom }
+                                      }));
+                                    }}
+                                    type="button"
+                                  >
+                                    {showCustom ? 'Ocultar' : 'Personalizar'}
+                                  </button>
+                                )}
+                              </div>
+                              {token && showCustom && (
+                                <div className="mt-2 space-y-2">
                                   {Object.entries(attrs).map(([attr, val]) => {
                                     // Determinar el tipo de input basado en el atributo y su valor
                                     const isBoolean = val === 'true' || val === 'false';
