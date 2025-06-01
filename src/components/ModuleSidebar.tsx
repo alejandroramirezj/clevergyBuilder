@@ -1137,36 +1137,6 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   return (
     <div className="w-96 h-screen bg-white border-r border-gray-200 flex flex-col">
       <div className="flex-1 overflow-y-auto p-4">
-        {/* Barra de pasos */}
-        <ShadTooltipProvider>
-          <div className="flex items-center justify-center gap-0 mb-6">
-            {steps.map((step, idx) => (
-              <div key={step.label} className="flex items-center">
-                <ShadTooltip>
-                  <ShadTooltipTrigger asChild>
-                    <button
-                      className={`flex flex-col items-center px-2 focus:outline-none ${step.status === 'done' ? 'text-green-600' : step.status === 'inprogress' ? 'text-blue-600' : 'text-gray-400'}`}
-                      onClick={() => scrollToStep(step.logId)}
-                      disabled={!step.logId}
-                      style={{ cursor: step.logId ? 'pointer' : 'not-allowed', background: 'none', border: 'none' }}
-                    >
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 ${step.status === 'done' ? 'border-green-500 bg-green-100' : step.status === 'inprogress' ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-gray-50'}`}>
-                        {step.status === 'done' ? '✔️' : step.status === 'inprogress' ? <span className="w-2 h-2 bg-blue-400 rounded-full block" /> : <span className="w-2 h-2 bg-gray-300 rounded-full block" />}
-                      </div>
-                      <span className="text-xs mt-1 whitespace-nowrap">{step.label}</span>
-                    </button>
-                  </ShadTooltipTrigger>
-                  <ShadTooltipContent>
-                    {step.tooltip}
-                  </ShadTooltipContent>
-                </ShadTooltip>
-                {idx < steps.length - 1 && (
-                  <div className={`h-1 w-8 ${steps[idx].status === 'done' ? 'bg-green-400' : 'bg-gray-200'} mx-1 rounded`} />
-                )}
-              </div>
-            ))}
-          </div>
-        </ShadTooltipProvider>
         {/* 2. Personaliza tu apariencia */}
         <div className="mb-6">
       <div className="p-4 border-b border-gray-100 relative">
@@ -1581,6 +1551,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                                 }));
                                               }}
                                               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                              disabled={false}
                                             />
                                             <span className="text-xs text-gray-600">Activar</span>
                                           </div>
@@ -1660,6 +1631,192 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
         </div>
         {/* 3. Con autenticación */}
         <div className="mb-6">
+          <div className="mb-4 bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl border border-teal-100 shadow-sm p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Lock size={18} className="text-teal-600" />
+              <h3 className="font-semibold text-gray-800">Autenticación</h3>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+                <div className="flex flex-wrap gap-2">
+                  <input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                    placeholder="Ingresa tu API key"
+                    autoComplete="off"
+                  />
+                  <button
+                    onClick={fetchToken}
+                    disabled={isLoading || !apiKey}
+                    className="min-w-[120px] bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200 whitespace-nowrap"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {isLoading ? 'Buscando...' : 'Continuar'}
+                  </button>
+                </div>
+              </div>
+              {apiKey && !token && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <div className="flex flex-wrap gap-2">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                      placeholder="Ingresa el email del usuario"
+                    />
+                    <button
+                      onClick={fetchToken}
+                      disabled={isLoading || !email}
+                      className="min-w-[120px] bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200 whitespace-nowrap"
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      {isLoading ? 'Buscando...' : 'Buscar casas'}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {/* Steppers, selector de casas y estado de la casa */}
+              {houses.length > 0 && (
+                <div className="mt-2">
+                  {/* Stepper minimalista y secuencial con tooltips mejorados */}
+                  <div className="flex flex-col items-center w-full mb-2">
+                    <div className="flex items-center justify-center w-full gap-4 mb-2">
+                      {/* Paso 1: Buscar userId */}
+                      <ShadTooltipProvider>
+                        <ShadTooltip>
+                          <ShadTooltipTrigger asChild>
+                            <div className="flex flex-col items-center cursor-pointer group">
+                              <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
+                                <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
+                              </div>
+                              <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">userId</span>
+                            </div>
+                          </ShadTooltipTrigger>
+                          <ShadTooltipContent className="max-w-xs">
+                            <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                            <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
+                              <MethodBadge method="GET" />
+                              <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users?email={email}</span>
+                            </div>
+                            <a href="https://docs.clever.gy/connect-api/get-users" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://docs.clever.gy/connect-api/get-users</a>
+                            {userIdStep.userId && <div className="mb-1 text-xs">userId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{userIdStep.userId}</span></div>}
+                            {userIdStep.logId && <a href={`#${userIdStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(userIdStep.logId);}}>Ver en consola</a>}
+                          </ShadTooltipContent>
+                        </ShadTooltip>
+                      </ShadTooltipProvider>
+                      <div className="h-0.5 w-6 bg-gray-200 rounded" />
+                      {/* Paso 2: Token */}
+                      <ShadTooltipProvider>
+                        <ShadTooltip>
+                          <ShadTooltipTrigger asChild>
+                            <div className="flex flex-col items-center cursor-pointer group">
+                              <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
+                                <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
+                              </div>
+                              <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Token</span>
+                            </div>
+                          </ShadTooltipTrigger>
+                          <ShadTooltipContent className="max-w-xs">
+                            <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                            <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
+                              <MethodBadge method="GET" />
+                              <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/auth/{userIdStep.userId}/token</span>
+                            </div>
+                            <a href="https://connect.clever.gy/auth/:userId/token" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/auth/:userId/token</a>
+                            {token && (
+                              <div className="mb-1 text-xs break-all">
+                                token: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{token.slice(0, 24)}...{token.slice(-8)}</span>
+                              </div>
+                            )}
+                            {userIdStep.logId && <a href={`#${userIdStep.logId}`} className="text-blue-600 underline text-xs block mt-1" onClick={e => {e.preventDefault(); scrollToStep(userIdStep.logId);}}>Ver en consola</a>}
+                          </ShadTooltipContent>
+                        </ShadTooltip>
+                      </ShadTooltipProvider>
+                      <div className="h-0.5 w-6 bg-gray-200 rounded" />
+                      {/* Paso 3: Casas */}
+                      <ShadTooltipProvider>
+                        <ShadTooltip>
+                          <ShadTooltipTrigger asChild>
+                            <div className="flex flex-col items-center cursor-pointer group">
+                              <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
+                                <StepCircle status={housesStep.status as 'pending' | 'inprogress' | 'done'} />
+                              </div>
+                              <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Casas</span>
+                            </div>
+                          </ShadTooltipTrigger>
+                          <ShadTooltipContent className="max-w-xs">
+                            <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                            <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
+                              <MethodBadge method="GET" />
+                              <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users/{userIdStep.userId}/supplies</span>
+                            </div>
+                            <a href="https://connect.clever.gy/users/:userId/supplies" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/users/:userId/supplies</a>
+                            {housesStep.status === 'done' && <div className="mb-1 text-xs">Casas: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{houses.length}</span></div>}
+                            {housesStep.logId && <a href={`#${housesStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(housesStep.logId);}}>Ver en consola</a>}
+                          </ShadTooltipContent>
+                        </ShadTooltip>
+                      </ShadTooltipProvider>
+                      <div className="h-0.5 w-6 bg-gray-200 rounded" />
+                      {/* Paso 4: Detalles */}
+                      <ShadTooltipProvider>
+                        <ShadTooltip>
+                          <ShadTooltipTrigger asChild>
+                            <div className="flex flex-col items-center cursor-pointer group">
+                              <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
+                                <StepCircle status={houseDetailsStep.status as 'pending' | 'inprogress' | 'done'} />
+                              </div>
+                              <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Detalles</span>
+                            </div>
+                          </ShadTooltipTrigger>
+                          <ShadTooltipContent className="max-w-xs">
+                            <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                            <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
+                              <MethodBadge method="GET" />
+                              <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/houses/{selectedHouseId}/house-detail</span>
+                            </div>
+                            <a href={`https://connect.clever.gy/houses/${selectedHouseId}/house-detail`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/houses/:houseId/house-detail</a>
+                            {houseDetailsStep.status === 'done' && <div className="mb-1 text-xs">houseId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{selectedHouseId}</span></div>}
+                            {houseDetailsStep.logId && <a href={`#${houseDetailsStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(houseDetailsStep.logId);}}>Ver en consola</a>}
+                          </ShadTooltipContent>
+                        </ShadTooltip>
+                      </ShadTooltipProvider>
+                    </div>
+                  </div>
+                  {/* Selector de casas */}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Selecciona una casa:</label>
+                  <select
+                    className="w-full border rounded-lg px-3 py-2 text-sm mb-2"
+                    value={selectedHouseId}
+                    onChange={e => handleSelectHouseAndGetToken(e.target.value)}
+                  >
+                    <option value="" disabled>Elige una casa...</option>
+                    {houses.map(h => (
+                      <option key={h.houseId} value={h.houseId}>{h.address || h.houseId}</option>
+                    ))}
+                  </select>
+                  {/* Estado de la casa debajo del selector */}
+                  {selectedHouseId && houseDetails[selectedHouseId] && (
+                    <div className="flex justify-center mt-3 mb-2">
+                      <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-2 flex flex-col items-center w-full max-w-md">
+                        <div className="flex items-center justify-center w-full mb-1 gap-2">
+                          <span className="text-xs font-semibold text-gray-700 text-center">Estado de la casa</span>
+                          <span className=""><HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyInfoIcon /></span>
+                        </div>
+                        <div className="flex justify-center w-full mt-1">
+                          <HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyIcons />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
           <details className="border rounded-lg" open={privadosDropdownOpen} onToggle={e => setPrivadosDropdownOpen((e.target as HTMLDetailsElement).open)}>
             <summary className="px-4 py-3 text-base font-semibold cursor-pointer bg-green-100 border-b rounded-t-lg flex items-center gap-2 select-none">
               <span role="img" aria-label="lock">🔒</span>
@@ -1667,195 +1824,299 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               <svg className="ml-2 transition-transform group-open:rotate-90" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </summary>
             <div className="p-4">
-              {/* Bloque de autenticación aquí */}
-              <div className="mb-4 bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl border border-teal-100 shadow-sm p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Lock size={18} className="text-teal-600" />
-                  <h3 className="font-semibold text-gray-800">Autenticación</h3>
+              {/* Callout naranja si no hay autenticación */}
+              {(!token || !selectedHouseId) && (
+                <div className="flex items-center gap-2 mb-4 bg-orange-50 border border-orange-200 text-orange-800 rounded-lg px-3 py-2 text-xs font-medium">
+                  <Info size={16} className="text-orange-400" />
+                  <span>Necesitas autenticarte y seleccionar una casa para poder arrastrar los módulos privados. Puedes ver y personalizar sus atributos igualmente.</span>
                 </div>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                    <div className="flex flex-wrap gap-2">
-                      <input
-                        type="password"
-                        value={apiKey}
-                        onChange={(e) => setApiKey(e.target.value)}
-                        className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
-                        placeholder="Ingresa tu API key"
-                        autoComplete="off"
-                      />
-                      <button
-                        onClick={fetchToken}
-                        disabled={isLoading || !apiKey}
-                        className="min-w-[120px] bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200 whitespace-nowrap"
-                        style={{ whiteSpace: 'nowrap' }}
-                      >
-                        {isLoading ? 'Buscando...' : 'Continuar'}
-                      </button>
-                    </div>
-                  </div>
-                  {apiKey && !token && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                      <div className="flex flex-wrap gap-2">
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
-                          placeholder="Ingresa el email del usuario"
-                        />
-                        <button
-                          onClick={fetchToken}
-                          disabled={isLoading || !email}
-                          className="min-w-[120px] bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 transition-all duration-200 whitespace-nowrap"
-                          style={{ whiteSpace: 'nowrap' }}
-                        >
-                          {isLoading ? 'Buscando...' : 'Buscar casas'}
-                        </button>
+              )}
+              {/* Agrupa los módulos privados por categoría en dropdowns */}
+              {Object.entries(groupedModules).map(([cat, mods]) => {
+                const privateMods = Array.isArray(mods) ? mods.filter(m => m.auth) : [];
+                if (privateMods.length === 0) return null;
+                return (
+                  <details key={cat} className="mb-3 border rounded-lg group">
+                    <summary className="px-3 py-2 text-sm font-semibold cursor-pointer bg-gray-50 border-b rounded-t-lg flex items-center gap-2 select-none">
+                      <span role="img" aria-label={cat}>{categoryInfo[cat]?.icon || '📦'}</span>
+                      <span>{cat} ({privateMods.length})</span>
+                      <svg className="ml-2 transition-transform group-open:rotate-90" width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </summary>
+                    <div className="p-3">
+                      <div className="space-y-1">
+                        {privateMods.map(module => {
+                          const attrs = extractAttrs(module.htmlTag);
+                          const showCustom = customAttrs[module.id]?.show || false;
+                          const htmlTag = module.htmlTag
+                            .replace(/data-token="[^"]*"/, `data-token="${token || ''}"`)
+                            .replace(/data-house-id="[^"]*"/, `data-house-id="${selectedHouseId || ''}"`);
+                          const isDisabled = !token || !selectedHouseId;
+                          return (
+                            <div
+                              key={module.id}
+                              className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group transition-shadow flex flex-col gap-1 ${isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-grab hover:shadow-md'}`}
+                              draggable={!isDisabled}
+                              onDragStart={isDisabled ? undefined : (e => handleDragStart(e, { ...module, htmlTag }))}
+                              style={{ marginBottom: 4 }}
+                            >
+                              <div className="flex items-center justify-between w-full gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-gray-900 text-xs truncate flex items-center gap-1">
+                                    {module.name} <Tooltip text={module.description} />
+                                  </h4>
+                                </div>
+                                <button
+                                  className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    setCustomAttrs(prev => ({
+                                      ...prev,
+                                      [module.id]: { ...prev[module.id], show: !showCustom }
+                                    }));
+                                  }}
+                                  type="button"
+                                >
+                                  {showCustom ? 'Ocultar' : 'Personalizar'}
+                                </button>
+                              </div>
+                              {showCustom && (
+                                <div className="mt-2 space-y-2">
+                                  {Object.entries(attrs).map(([attr, val]) => {
+                                    const isBoolean = val === 'true' || val === 'false';
+                                    const isUnit = attr === 'data-unit';
+                                    const isLanguage = attr === 'data-language';
+                                    return (
+                                      <div key={attr} className="flex flex-col gap-1">
+                                        <label className="text-xs text-gray-500 flex items-center gap-1">
+                                          {attr.replace('data-', '').replace(/-/g, ' ')}
+                                          <Tooltip text={`Valor actual: ${String(val)}`} />
+                                        </label>
+                                        {isBoolean ? (
+                                          <div className="flex items-center gap-2">
+                                            <input
+                                              type="checkbox"
+                                              checked={customAttrs[module.id]?.[attr] === 'true' || (!customAttrs[module.id]?.[attr] && val === 'true')}
+                                              onChange={e => {
+                                                setCustomAttrs(prev => ({
+                                                  ...prev,
+                                                  [module.id]: { ...prev[module.id], [attr]: e.target.checked ? 'true' : 'false' }
+                                                }));
+                                              }}
+                                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                              disabled={isDisabled}
+                                            />
+                                            <span className="text-xs text-gray-600">Activar</span>
+                                          </div>
+                                        ) : isUnit ? (
+                                          <select
+                                            value={customAttrs[module.id]?.[attr] || val || ''}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                            disabled={isDisabled}
+                                          >
+                                            <option value="ENERGY">ENERGY</option>
+                                            <option value="CURRENCY">CURRENCY</option>
+                                          </select>
+                                        ) : isLanguage ? (
+                                          <select
+                                            value={customAttrs[module.id]?.[attr] || val || ''}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                            disabled={isDisabled}
+                                          >
+                                            <option value="" disabled>Elige idioma...</option>
+                                            <option value="es-ES">es-ES</option>
+                                            <option value="ca-ES">ca-ES</option>
+                                            <option value="gl-ES">gl-ES</option>
+                                          </select>
+                                        ) : (
+                                          <input
+                                            type="text"
+                                            value={String(customAttrs[module.id]?.[attr] || val)}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                              }));
+                                            }}
+                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                            placeholder={String(val)}
+                                            disabled={isDisabled}
+                                          />
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
-                  )}
-                  {houses.length > 0 && (
-                    <div className="mt-2">
-                      <div className="flex flex-col items-center w-full mb-2">
-                        <div className="flex items-center justify-center w-full gap-4 mb-2">
-                          {/* Paso 1: Buscar userId */}
-                          <ShadTooltipProvider>
-                            <ShadTooltip>
-                              <ShadTooltipTrigger asChild>
-                                <div className="flex flex-col items-center cursor-pointer group">
-                                  <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
-                                    <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
-                                  </div>
-                                  <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">userId</span>
-                                </div>
-                              </ShadTooltipTrigger>
-                              <ShadTooltipContent className="max-w-xs">
-                                <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
-                                <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
-                                  <MethodBadge method="GET" />
-                                  <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users?email={email}</span>
-                                </div>
-                                <a href="https://docs.clever.gy/connect-api/get-users" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://docs.clever.gy/connect-api/get-users</a>
-                                {userIdStep.userId && <div className="mb-1 text-xs">userId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{userIdStep.userId}</span></div>}
-                                {userIdStep.logId && <a href={`#${userIdStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(userIdStep.logId);}}>Ver en consola</a>}
-                              </ShadTooltipContent>
-                            </ShadTooltip>
-                          </ShadTooltipProvider>
-                          <div className="h-0.5 w-6 bg-gray-200 rounded" />
-                          {/* Paso extra: Token */}
-                          <ShadTooltipProvider>
-                            <ShadTooltip>
-                              <ShadTooltipTrigger asChild>
-                                <div className="flex flex-col items-center cursor-pointer group">
-                                  <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
-                                    <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
-                                  </div>
-                                  <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Token</span>
-                                </div>
-                              </ShadTooltipTrigger>
-                              <ShadTooltipContent className="max-w-xs">
-                                <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
-                                <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
-                                  <MethodBadge method="GET" />
-                                  <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/auth/{userIdStep.userId}/token</span>
-                                </div>
-                                <a href="https://connect.clever.gy/auth/:userId/token" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/auth/:userId/token</a>
-                                {/* Mostrar JWT truncado si está disponible */}
-                                {token && (
-                                  <div className="mb-1 text-xs break-all">
-                                    token: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{token.slice(0, 24)}...{token.slice(-8)}</span>
-                                  </div>
-                                )}
-                                {userIdStep.logId && <a href={`#${userIdStep.logId}`} className="text-blue-600 underline text-xs block mt-1" onClick={e => {e.preventDefault(); scrollToStep(userIdStep.logId);}}>Ver en consola</a>}
-                              </ShadTooltipContent>
-                            </ShadTooltip>
-                          </ShadTooltipProvider>
-                          <div className="h-0.5 w-6 bg-gray-200 rounded" />
-                          {/* Paso 2: Casas */}
-                          <ShadTooltipProvider>
-                            <ShadTooltip>
-                              <ShadTooltipTrigger asChild>
-                                <div className="flex flex-col items-center cursor-pointer group">
-                                  <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
-                                    <StepCircle status={housesStep.status as 'pending' | 'inprogress' | 'done'} />
-                                  </div>
-                                  <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Casas</span>
-                                </div>
-                              </ShadTooltipTrigger>
-                              <ShadTooltipContent className="max-w-xs">
-                                <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
-                                <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
-                                  <MethodBadge method="GET" />
-                                  <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users/{userIdStep.userId}/supplies</span>
-                                </div>
-                                <a href="https://connect.clever.gy/users/:userId/supplies" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/users/:userId/supplies</a>
-                                {housesStep.status === 'done' && <div className="mb-1 text-xs">Casas: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{houses.length}</span></div>}
-                                {housesStep.logId && <a href={`#${housesStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(housesStep.logId);}}>Ver en consola</a>}
-                              </ShadTooltipContent>
-                            </ShadTooltip>
-                          </ShadTooltipProvider>
-                          <div className="h-0.5 w-6 bg-gray-200 rounded" />
-                          {/* Paso 3: Detalles */}
-                          <ShadTooltipProvider>
-                            <ShadTooltip>
-                              <ShadTooltipTrigger asChild>
-                                <div className="flex flex-col items-center cursor-pointer group">
-                                  <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
-                                    <StepCircle status={houseDetailsStep.status as 'pending' | 'inprogress' | 'done'} />
-                                  </div>
-                                  <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Detalles</span>
-                                </div>
-                              </ShadTooltipTrigger>
-                              <ShadTooltipContent className="max-w-xs">
-                                <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
-                                <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
-                                  <MethodBadge method="GET" />
-                                  <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/houses/{selectedHouseId}/house-detail</span>
-                                </div>
-                                <a href={`https://connect.clever.gy/houses/${selectedHouseId}/house-detail`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/houses/:houseId/house-detail</a>
-                                {houseDetailsStep.status === 'done' && <div className="mb-1 text-xs">houseId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{selectedHouseId}</span></div>}
-                                {houseDetailsStep.logId && <a href={`#${houseDetailsStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(houseDetailsStep.logId);}}>Ver en consola</a>}
-                              </ShadTooltipContent>
-                            </ShadTooltip>
-                          </ShadTooltipProvider>
-                        </div>
-                      </div>
-                      {/* Selector de casas */}
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Selecciona una casa:</label>
-                      <select
-                        className="w-full border rounded-lg px-3 py-2 text-sm mb-2"
-                        value={selectedHouseId}
-                        onChange={e => handleSelectHouseAndGetToken(e.target.value)}
-                      >
-                        <option value="" disabled>Elige una casa...</option>
-                        {houses.map(h => (
-                          <option key={h.houseId} value={h.houseId}>{h.address || h.houseId}</option>
-                        ))}
-                      </select>
-                      {/* 2. Estado de la casa debajo del selector */}
-                      {selectedHouseId && houseDetails[selectedHouseId] && (
-                        <div className="flex justify-center mt-3 mb-2">
-                          <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-2 flex flex-col items-center w-full max-w-md">
-                            <div className="flex items-center justify-center w-full mb-1 gap-2">
-                              <span className="text-xs font-semibold text-gray-700 text-center">Estado de la casa</span>
-                              <span className=""><HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyInfoIcon /></span>
-                            </div>
-                            <div className="flex justify-center w-full mt-1">
-                              <HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyIcons />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
+                  </details>
+                );
+              })}
             </div>
           </details>
         </div>
+        {token && selectedHouseId && (
+          <div className="mt-4">
+            {Object.entries(groupedModules).map(([cat, mods]) => {
+              const privateMods = Array.isArray(mods) ? mods.filter(m => m.auth) : [];
+              if (privateMods.length === 0) return null;
+              return (
+                <details key={cat} className="border rounded-lg mb-4">
+                  <summary className="px-4 py-3 text-base font-semibold cursor-pointer bg-gray-100 border-b rounded-t-lg flex items-center gap-2 select-none">
+                    <span role="img" aria-label={cat}>{categoryInfo[cat]?.icon || '📦'}</span>
+                    <span>{cat} ({privateMods.length})</span>
+                    <svg className="ml-2 transition-transform group-open:rotate-90" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                      <path d="M8 10l4 4 4-4" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </summary>
+                  <div className="p-4">
+                    <div className="space-y-1">
+                      {privateMods.map(module => {
+                        const attrs = extractAttrs(module.htmlTag);
+                        const showCustom = customAttrs[module.id]?.show || false;
+                        const htmlTag = module.htmlTag
+                          .replace(/data-token="[^"]*"/, `data-token="${token || ''}"`)
+                          .replace(/data-house-id="[^"]*"/, `data-house-id="${selectedHouseId || ''}"`);
+                        const isDisabled = !token || !selectedHouseId;
+                        return (
+                          <div
+                            key={module.id}
+                            className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group transition-shadow flex flex-col gap-1 ${isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-grab hover:shadow-md'}`}
+                            draggable={!isDisabled}
+                            onDragStart={isDisabled ? undefined : (e => handleDragStart(e, { ...module, htmlTag }))}
+                            style={{ marginBottom: 4 }}
+                          >
+                            <div className="flex items-center justify-between w-full gap-2">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-gray-900 text-xs truncate flex items-center gap-1">
+                                  {module.name} <Tooltip text={module.description} />
+                                </h4>
+                              </div>
+                              <button
+                                className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setCustomAttrs(prev => ({
+                                    ...prev,
+                                    [module.id]: { ...prev[module.id], show: !showCustom }
+                                  }));
+                                }}
+                                type="button"
+                              >
+                                {showCustom ? 'Ocultar' : 'Personalizar'}
+                              </button>
+                            </div>
+                            {isDisabled && (
+                              <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center rounded-lg pointer-events-none z-10">
+                                <span className="text-xs text-gray-500 font-semibold">Requiere autenticación</span>
+                              </div>
+                            )}
+                            {showCustom && (
+                              <div className="mt-2 space-y-2">
+                                {Object.entries(attrs).map(([attr, val]) => {
+                                  const isBoolean = val === 'true' || val === 'false';
+                                  const isUnit = attr === 'data-unit';
+                                  const isLanguage = attr === 'data-language';
+                                  const isDisabled = !!(module.auth && (!token || !selectedHouseId));
+                                  return (
+                                    <div key={attr} className="flex flex-col gap-1">
+                                      <label className="text-xs text-gray-500 flex items-center gap-1">
+                                        {attr.replace('data-', '').replace(/-/g, ' ')}
+                                        <Tooltip text={`Valor actual: ${String(val)}`} />
+                                      </label>
+                                      {isBoolean ? (
+                                        <div className="flex items-center gap-2">
+                                          <input
+                                            type="checkbox"
+                                            checked={customAttrs[module.id]?.[attr] === 'true' || (!customAttrs[module.id]?.[attr] && val === 'true')}
+                                            onChange={e => {
+                                              setCustomAttrs(prev => ({
+                                                ...prev,
+                                                [module.id]: { ...prev[module.id], [attr]: e.target.checked ? 'true' : 'false' }
+                                              }));
+                                            }}
+                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                            disabled={false}
+                                          />
+                                          <span className="text-xs text-gray-600">Activar</span>
+                                        </div>
+                                      ) : isUnit ? (
+                                        <select
+                                          value={customAttrs[module.id]?.[attr] || val || ''}
+                                          onChange={e => {
+                                            setCustomAttrs(prev => ({
+                                              ...prev,
+                                              [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                            }));
+                                          }}
+                                          className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                          disabled={false}
+                                        >
+                                          <option value="ENERGY">ENERGY</option>
+                                          <option value="CURRENCY">CURRENCY</option>
+                                        </select>
+                                      ) : isLanguage ? (
+                                        <select
+                                          value={customAttrs[module.id]?.[attr] || val || ''}
+                                          onChange={e => {
+                                            setCustomAttrs(prev => ({
+                                              ...prev,
+                                              [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                            }));
+                                          }}
+                                          className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                          disabled={false}
+                                        >
+                                          <option value="" disabled>Elige idioma...</option>
+                                          <option value="es-ES">es-ES</option>
+                                          <option value="ca-ES">ca-ES</option>
+                                          <option value="gl-ES">gl-ES</option>
+                                        </select>
+                                      ) : (
+                                        <input
+                                          type="text"
+                                          value={String(customAttrs[module.id]?.[attr] || val)}
+                                          onChange={e => {
+                                            setCustomAttrs(prev => ({
+                                              ...prev,
+                                              [module.id]: { ...prev[module.id], [attr]: e.target.value }
+                                            }));
+                                          }}
+                                          className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
+                                          placeholder={String(val)}
+                                          disabled={false}
+                                        />
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

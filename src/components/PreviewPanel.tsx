@@ -185,37 +185,27 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
     <div className="h-full bg-gray-100 flex flex-col">
       {/* Preview Toolbar */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <h3 className="text-lg font-semibold text-gray-900">Preview</h3>
-            <span className="text-sm text-gray-500">
-              {modules.length} módulos activos
-            </span>
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            {deviceOptions.map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setDevice(opt.key)}
+                className={`px-3 py-1 rounded flex items-center gap-1 ${device===opt.key ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'}`}
+              >
+                {opt.icon}
+                {opt.label}
+              </button>
+            ))}
           </div>
-          <div className="flex items-center space-x-4">
-            {/* Botón para mostrar/ocultar código */}
-            <button
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${showCode ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
-              onClick={() => setShowCode(v => !v)}
-              title={showCode ? 'Ocultar código' : 'Ver código HTML'}
-            >
-              <Code size={16} />
-              <span>{showCode ? 'Ocultar código' : 'Ver código'}</span>
-            </button>
-          </div>
-        </div>
-        {/* Selector de dispositivo */}
-        <div className="flex gap-2 mt-4">
-          {deviceOptions.map(opt => (
-            <button
-              key={opt.key}
-              onClick={() => setDevice(opt.key)}
-              className={`px-3 py-1 rounded flex items-center gap-1 ${device===opt.key ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'}`}
-            >
-              {opt.icon}
-              {opt.label}
-            </button>
-          ))}
+          <button
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${showCode ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+            onClick={() => setShowCode(v => !v)}
+            title={showCode ? 'Ocultar código' : 'Ver código HTML'}
+          >
+            <Code size={16} />
+            <span>{showCode ? 'Ocultar código' : 'Ver código'}</span>
+          </button>
         </div>
       </div>
 
