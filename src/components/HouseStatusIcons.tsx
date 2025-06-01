@@ -129,7 +129,7 @@ const HouseStatusIcons: React.FC<HouseStatusIconsProps> = ({ houseDetail, onlyIn
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-1">
                     <img 
-                      src="/favicons/huawei.svg" 
+                      src="/clevergyBuilder/favicons/huawei.svg" 
                       alt="Huawei" 
                       className={`w-4 h-4 ${houseIntegrations.huaweiB2C.status === "CONNECTED" ? "opacity-100" : "opacity-30"}`}
                     />
@@ -147,7 +147,7 @@ const HouseStatusIcons: React.FC<HouseStatusIconsProps> = ({ houseDetail, onlyIn
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-1">
                     <img 
-                      src="/favicons/fronius.svg" 
+                      src="/clevergyBuilder/favicons/fronius.svg" 
                       alt="Fronius" 
                       className={`w-4 h-4 ${houseIntegrations.froniusB2C.status === "CONNECTED" ? "opacity-100" : "opacity-30"}`}
                     />
