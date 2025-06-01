@@ -210,6 +210,10 @@ function getRandomEmoji() {
 const StepCircle = ({ status }: { status: 'pending' | 'inprogress' | 'done' }) => {
   let color = '#d1d5db'; // gris
   let percent = 0;
+  let fill = 'white';
+  let iColor = 'transparent';
+  let iFontWeight = 'normal';
+  let iFontSize = 13;
   if (status === 'inprogress') {
     color = '#3b82f6'; // azul
     percent = 50;
@@ -217,6 +221,10 @@ const StepCircle = ({ status }: { status: 'pending' | 'inprogress' | 'done' }) =
   if (status === 'done') {
     color = '#22c55e'; // verde
     percent = 100;
+    fill = 'white';
+    iColor = '#22c55e';
+    iFontWeight = 'normal';
+    iFontSize = 13;
   }
   const radius = 12;
   const stroke = 3;
@@ -224,7 +232,7 @@ const StepCircle = ({ status }: { status: 'pending' | 'inprogress' | 'done' }) =
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (percent / 100) * circumference;
   return (
-    <svg height={radius * 2} width={radius * 2}>
+    <svg height={radius * 2} width={radius * 2} style={{ position: 'relative', display: 'block' }}>
       <circle
         stroke="#e5e7eb"
         fill="white"
@@ -235,7 +243,7 @@ const StepCircle = ({ status }: { status: 'pending' | 'inprogress' | 'done' }) =
       />
       <circle
         stroke={color}
-        fill="transparent"
+        fill={fill}
         strokeWidth={stroke}
         strokeDasharray={circumference + ' ' + circumference}
         style={{ strokeDashoffset, transition: 'stroke-dashoffset 0.4s, stroke 0.4s' }}
@@ -243,6 +251,19 @@ const StepCircle = ({ status }: { status: 'pending' | 'inprogress' | 'done' }) =
         cx={radius}
         cy={radius}
       />
+      {status === 'done' && (
+        <text
+          x={radius}
+          y={radius + 4}
+          textAnchor="middle"
+          fontSize={iFontSize}
+          fontWeight={iFontWeight}
+          fill={iColor}
+          pointerEvents="none"
+        >
+          i
+        </text>
+      )}
     </svg>
   );
 };
@@ -1704,9 +1725,11 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                           <ShadTooltipProvider>
                             <ShadTooltip>
                               <ShadTooltipTrigger asChild>
-                                <div className="flex flex-col items-center cursor-pointer">
-                                  <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
-                                  <span className="text-xs mt-1">userId</span>
+                                <div className="flex flex-col items-center cursor-pointer group">
+                                  <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
+                                    <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
+                                  </div>
+                                  <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">userId</span>
                                 </div>
                               </ShadTooltipTrigger>
                               <ShadTooltipContent className="max-w-xs">
@@ -1715,7 +1738,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                   <MethodBadge method="GET" />
                                   <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users?email={email}</span>
                                 </div>
-                                <a href="https://docs.clever.gy/connect-api/get-users" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">@https://docs.clever.gy/connect-api/get-users</a>
+                                <a href="https://docs.clever.gy/connect-api/get-users" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://docs.clever.gy/connect-api/get-users</a>
                                 {userIdStep.userId && <div className="mb-1 text-xs">userId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{userIdStep.userId}</span></div>}
                                 {userIdStep.logId && <a href={`#${userIdStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(userIdStep.logId);}}>Ver en consola</a>}
                               </ShadTooltipContent>
@@ -1726,9 +1749,11 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                           <ShadTooltipProvider>
                             <ShadTooltip>
                               <ShadTooltipTrigger asChild>
-                                <div className="flex flex-col items-center cursor-pointer">
-                                  <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
-                                  <span className="text-xs mt-1">Token</span>
+                                <div className="flex flex-col items-center cursor-pointer group">
+                                  <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
+                                    <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
+                                  </div>
+                                  <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Token</span>
                                 </div>
                               </ShadTooltipTrigger>
                               <ShadTooltipContent className="max-w-xs">
@@ -1737,7 +1762,13 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                   <MethodBadge method="GET" />
                                   <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/auth/{userIdStep.userId}/token</span>
                                 </div>
-                                <span className="text-blue-600 text-xs">@https://connect.clever.gy/auth/:userId/token</span>
+                                <a href="https://connect.clever.gy/auth/:userId/token" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/auth/:userId/token</a>
+                                {/* Mostrar JWT truncado si está disponible */}
+                                {token && (
+                                  <div className="mb-1 text-xs break-all">
+                                    token: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{token.slice(0, 24)}...{token.slice(-8)}</span>
+                                  </div>
+                                )}
                                 {userIdStep.logId && <a href={`#${userIdStep.logId}`} className="text-blue-600 underline text-xs block mt-1" onClick={e => {e.preventDefault(); scrollToStep(userIdStep.logId);}}>Ver en consola</a>}
                               </ShadTooltipContent>
                             </ShadTooltip>
@@ -1747,9 +1778,11 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                           <ShadTooltipProvider>
                             <ShadTooltip>
                               <ShadTooltipTrigger asChild>
-                                <div className="flex flex-col items-center cursor-pointer">
-                                  <StepCircle status={housesStep.status as 'pending' | 'inprogress' | 'done'} />
-                                  <span className="text-xs mt-1">Casas</span>
+                                <div className="flex flex-col items-center cursor-pointer group">
+                                  <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
+                                    <StepCircle status={housesStep.status as 'pending' | 'inprogress' | 'done'} />
+                                  </div>
+                                  <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Casas</span>
                                 </div>
                               </ShadTooltipTrigger>
                               <ShadTooltipContent className="max-w-xs">
@@ -1758,7 +1791,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                   <MethodBadge method="GET" />
                                   <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users/{userIdStep.userId}/supplies</span>
                                 </div>
-                                <span className="text-blue-600 text-xs">@GET https://connect.clever.gy/users/:userId/supplies</span>
+                                <a href="https://connect.clever.gy/users/:userId/supplies" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/users/:userId/supplies</a>
                                 {housesStep.status === 'done' && <div className="mb-1 text-xs">Casas: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{houses.length}</span></div>}
                                 {housesStep.logId && <a href={`#${housesStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(housesStep.logId);}}>Ver en consola</a>}
                               </ShadTooltipContent>
@@ -1769,9 +1802,11 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                           <ShadTooltipProvider>
                             <ShadTooltip>
                               <ShadTooltipTrigger asChild>
-                                <div className="flex flex-col items-center cursor-pointer">
-                                  <StepCircle status={houseDetailsStep.status as 'pending' | 'inprogress' | 'done'} />
-                                  <span className="text-xs mt-1">Detalles</span>
+                                <div className="flex flex-col items-center cursor-pointer group">
+                                  <div className="transition-shadow group-hover:shadow-lg group-hover:scale-105 rounded-full">
+                                    <StepCircle status={houseDetailsStep.status as 'pending' | 'inprogress' | 'done'} />
+                                  </div>
+                                  <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Detalles</span>
                                 </div>
                               </ShadTooltipTrigger>
                               <ShadTooltipContent className="max-w-xs">
@@ -1780,7 +1815,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                   <MethodBadge method="GET" />
                                   <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/houses/{selectedHouseId}/house-detail</span>
                                 </div>
-                                <a href={`https://connect.clever.gy/houses/${selectedHouseId}/house-detail`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">@https://connect.clever.gy/houses/:houseId/house-detail</a>
+                                <a href={`https://connect.clever.gy/houses/${selectedHouseId}/house-detail`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/houses/:houseId/house-detail</a>
                                 {houseDetailsStep.status === 'done' && <div className="mb-1 text-xs">houseId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{selectedHouseId}</span></div>}
                                 {houseDetailsStep.logId && <a href={`#${houseDetailsStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(houseDetailsStep.logId);}}>Ver en consola</a>}
                               </ShadTooltipContent>
