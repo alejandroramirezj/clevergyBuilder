@@ -14,9 +14,8 @@ interface HouseStatusIconsProps {
   onlyIcons?: boolean;
 }
 
-const scrollToConsoleBlock = (houseId: string) => {
-  // Busca un elemento con id específico y hace scroll o highlight
-  const el = document.getElementById(`console-house-${houseId}`);
+const scrollToApiBlock = (houseId: string) => {
+  const el = document.getElementById(`api-get-house-details-${houseId}`);
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     el.classList.add('ring-2', 'ring-blue-400');
@@ -45,13 +44,17 @@ const HouseStatusIcons: React.FC<HouseStatusIconsProps> = ({ houseDetail, onlyIn
                 <p className="text-sm text-gray-600">
                   Estos datos se obtienen de la llamada a la API en la consola:
                 </p>
-                <button
-                  onClick={() => scrollToConsoleBlock(houseId)}
-                  className="block w-full bg-gray-100 px-2 py-1 rounded text-xs font-mono text-blue-700 hover:bg-blue-50 text-left mb-2 border border-blue-100 transition"
+                <a
+                  href={`#api-get-house-details-${houseId}`}
+                  onClick={e => {
+                    e.preventDefault();
+                    scrollToApiBlock(houseId);
+                  }}
+                  className="block w-full bg-gray-100 px-2 py-1 rounded text-xs font-mono text-blue-700 hover:bg-blue-50 text-left mb-2 border border-blue-100 transition cursor-pointer"
                   style={{ outline: 'none' }}
                 >
                   Ir a la sección de la consola
-                </button>
+                </a>
                 <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
                   <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs text-gray-700">
                     <div className="font-semibold">Campo</div>

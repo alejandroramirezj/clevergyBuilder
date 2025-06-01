@@ -78,20 +78,32 @@ const ApiConsole: React.FC = () => {
         {logs.length === 0 ? (
           <div style={{ color: '#B0BEC5', textAlign: 'center', marginTop: 32 }}>No hay peticiones registradas aún.</div>
         ) : (
-          logs.map(log => (
-            <div key={log.id} style={{ margin: '0 0 10px 0', padding: '8px 20px', borderLeft: `3px solid ${methodColors[log.method] || '#B0BEC5'}`, background: '#20222b', borderRadius: 6, boxShadow: '0 1px 4px 0 rgba(0,0,0,0.04)', wordBreak: 'break-all', whiteSpace: 'pre-line' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: methodColors[log.method] || '#B0BEC5', fontWeight: 700 }}>{log.method}</span>
-                <span style={{ color: '#FFD54F', fontSize: 12 }}>{formatTime(log.timestamp)}</span>
-                <span style={{ color: '#ECEFF1', fontSize: 13, marginLeft: 8, fontWeight: 500 }}>{log.url}</span>
-                <span style={{ marginLeft: 'auto', color: log.status && log.status >= 200 && log.status < 300 ? '#A5D6A7' : '#EF9A9A', fontWeight: 600, fontSize: 13 }}>{log.status} {log.statusText}</span>
+          logs.map(log => {
+            // Detectar si es la petición GET house-detail
+            let logId = undefined;
+            const match = log.method === 'GET' && log.url.match(/\/houses\/([\w-]+)\/house-detail/);
+            if (match) {
+              logId = `api-get-house-details-${match[1]}`;
+            }
+            return (
+              <div
+                key={log.id}
+                {...(logId ? { id: logId } : {})}
+                style={{ margin: '0 0 10px 0', padding: '8px 20px', borderLeft: `3px solid ${methodColors[log.method] || '#B0BEC5'}`, background: '#20222b', borderRadius: 6, boxShadow: '0 1px 4px 0 rgba(0,0,0,0.04)', wordBreak: 'break-all', whiteSpace: 'pre-line' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ color: methodColors[log.method] || '#B0BEC5', fontWeight: 700 }}>{log.method}</span>
+                  <span style={{ color: '#FFD54F', fontSize: 12 }}>{formatTime(log.timestamp)}</span>
+                  <span style={{ color: '#ECEFF1', fontSize: 13, marginLeft: 8, fontWeight: 500 }}>{log.url}</span>
+                  <span style={{ marginLeft: 'auto', color: log.status && log.status >= 200 && log.status < 300 ? '#A5D6A7' : '#EF9A9A', fontWeight: 600, fontSize: 13 }}>{log.status} {log.statusText}</span>
+                </div>
+                {log.comment && <div style={{ color: '#B0BEC5', fontSize: 12, margin: '2px 0 4px 0', wordBreak: 'break-word', whiteSpace: 'pre-line' }}># {log.comment}</div>}
+                {log.body && <div style={{ color: '#B0BEC5', fontSize: 12, margin: '2px 0 2px 0', wordBreak: 'break-word', whiteSpace: 'pre-line' }}>Body: <pre style={{ display: 'block', color: '#ECEFF1', wordBreak: 'break-word', whiteSpace: 'pre-line' }}>{prettyJson(log.body)}</pre></div>}
+                {log.response && <div style={{ color: '#B0BEC5', fontSize: 12, margin: '2px 0 2px 0', wordBreak: 'break-word', whiteSpace: 'pre-line' }}>Resp: <pre style={{ display: 'block', color: '#ECEFF1', wordBreak: 'break-word', whiteSpace: 'pre-line' }}>{prettyJson(log.response)}</pre></div>}
+                {log.headers && <div style={{ color: '#B0BEC5', fontSize: 11, margin: '2px 0 2px 0' }}>Headers: {Object.entries(log.headers).map(([k, v]) => <span key={k} style={{ color: '#FFD54F', marginRight: 8 }}>{k}: <span style={{ color: '#ECEFF1' }}>{k.toLowerCase().includes('key') ? '****' : v}</span></span>)}</div>}
               </div>
-              {log.comment && <div style={{ color: '#B0BEC5', fontSize: 12, margin: '2px 0 4px 0', wordBreak: 'break-word', whiteSpace: 'pre-line' }}># {log.comment}</div>}
-              {log.body && <div style={{ color: '#B0BEC5', fontSize: 12, margin: '2px 0 2px 0', wordBreak: 'break-word', whiteSpace: 'pre-line' }}>Body: <pre style={{ display: 'block', color: '#ECEFF1', wordBreak: 'break-word', whiteSpace: 'pre-line' }}>{prettyJson(log.body)}</pre></div>}
-              {log.response && <div style={{ color: '#B0BEC5', fontSize: 12, margin: '2px 0 2px 0', wordBreak: 'break-word', whiteSpace: 'pre-line' }}>Resp: <pre style={{ display: 'block', color: '#ECEFF1', wordBreak: 'break-word', whiteSpace: 'pre-line' }}>{prettyJson(log.response)}</pre></div>}
-              {log.headers && <div style={{ color: '#B0BEC5', fontSize: 11, margin: '2px 0 2px 0' }}>Headers: {Object.entries(log.headers).map(([k, v]) => <span key={k} style={{ color: '#FFD54F', marginRight: 8 }}>{k}: <span style={{ color: '#ECEFF1' }}>{k.toLowerCase().includes('key') ? '****' : v}</span></span>)}</div>}
-            </div>
-          ))
+            );
+          })
         )}
         <div ref={bottomRef} />
       </div>
