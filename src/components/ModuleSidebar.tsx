@@ -2002,15 +2002,15 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                               <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">userId</span>
                             </div>
                           </ShadTooltipTrigger>
-                          <ShadTooltipContent className="max-w-xs">
+                          <ShadTooltipContent className="max-w-[370px]">
                             <div className="mb-2 text-xs text-gray-700 font-semibold">¿Qué es el userId?</div>
                             <div className="text-xs text-gray-600 mb-2">Es el identificador único del usuario en Clevergy. Se obtiene a partir del email y es necesario para solicitar el token y acceder a sus datos.</div>
                             <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
                               <MethodBadge method="GET" />
-                              <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users?email={email}</span>
+                              <span className="font-mono text-xs text-gray-800 break-all">https://connect.clever.gy/users?email={email}</span>
                             </div>
-                            <a href="https://docs.clever.gy/connect-api/get-users" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://docs.clever.gy/connect-api/get-users</a>
-                            {userIdStep.userId && <div className="mb-1 text-xs">userId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{userIdStep.userId}</span></div>}
+                            <a href="https://docs.clever.gy/connect-api/get-users" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1 break-all">https://docs.clever.gy/connect-api/get-users</a>
+                            {userIdStep.userId && <div className="mb-1 text-xs break-all">userId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{userIdStep.userId}</span></div>}
                             {userIdStep.logId && <a href={`#${userIdStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(userIdStep.logId);}}>Ver en consola</a>}
                           </ShadTooltipContent>
                         </ShadTooltip>
@@ -2027,14 +2027,14 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                               <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Token</span>
                             </div>
                           </ShadTooltipTrigger>
-                          <ShadTooltipContent className="max-w-xs">
+                          <ShadTooltipContent className="max-w-[370px]">
                             <div className="mb-2 text-xs text-gray-700 font-semibold">¿Qué es el token?</div>
                             <div className="text-xs text-gray-600 mb-2">El token es una clave temporal que permite acceder a los datos del usuario de forma segura. Es necesario para consultar las casas y los módulos privados.</div>
                             <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
                               <MethodBadge method="GET" />
-                              <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/auth/{userIdStep.userId}/token</span>
+                              <span className="font-mono text-xs text-gray-800 break-all">https://connect.clever.gy/auth/{userIdStep.userId}/token</span>
                             </div>
-                            <a href="https://connect.clever.gy/auth/:userId/token" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/auth/:userId/token</a>
+                            <a href="https://connect.clever.gy/auth/:userId/token" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1 break-all">https://connect.clever.gy/auth/:userId/token</a>
                             {token && (
                               <div className="mb-1 text-xs break-all">
                                 token: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{token.slice(0, 24)}...{token.slice(-8)}</span>
@@ -2056,14 +2056,14 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                               <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Casas</span>
                             </div>
                           </ShadTooltipTrigger>
-                          <ShadTooltipContent className="max-w-xs">
+                          <ShadTooltipContent className="max-w-[370px]">
                             <div className="mb-2 text-xs text-gray-700 font-semibold">¿Qué son las casas?</div>
                             <div className="text-xs text-gray-600 mb-2">Son los suministros o viviendas asociadas al usuario. Selecciona una para ver y personalizar los módulos con datos reales.</div>
                             <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
                               <MethodBadge method="GET" />
-                              <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users/{userIdStep.userId}/supplies</span>
+                              <span className="font-mono text-xs text-gray-800 break-all">https://connect.clever.gy/users/{userIdStep.userId}/supplies</span>
                             </div>
-                            <a href="https://connect.clever.gy/users/:userId/supplies" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/users/:userId/supplies</a>
+                            <a href="https://connect.clever.gy/users/:userId/supplies" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1 break-all">https://connect.clever.gy/users/:userId/supplies</a>
                             {housesStep.status === 'done' && <div className="mb-1 text-xs">Casas: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{houses.length}</span></div>}
                             {housesStep.logId && <a href={`#${housesStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(housesStep.logId);}}>Ver en consola</a>}
                           </ShadTooltipContent>
@@ -2081,15 +2081,15 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                               <span className="text-xs mt-1 group-hover:text-teal-700 transition-colors">Detalles</span>
                             </div>
                           </ShadTooltipTrigger>
-                          <ShadTooltipContent className="max-w-xs">
+                          <ShadTooltipContent className="max-w-[370px]">
                             <div className="mb-2 text-xs text-gray-700 font-semibold">¿Qué son los detalles?</div>
                             <div className="text-xs text-gray-600 mb-2">Aquí puedes ver información detallada de la casa seleccionada, como dirección, CUPS, integraciones y estado de los datos energéticos.</div>
                             <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
                               <MethodBadge method="GET" />
-                              <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/houses/{selectedHouseId}/house-detail</span>
+                              <span className="font-mono text-xs text-gray-800 break-all">https://connect.clever.gy/houses/{selectedHouseId}/house-detail</span>
                             </div>
-                            <a href={`https://connect.clever.gy/houses/${selectedHouseId}/house-detail`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">https://connect.clever.gy/houses/:houseId/house-detail</a>
-                            {houseDetailsStep.status === 'done' && <div className="mb-1 text-xs">houseId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{selectedHouseId}</span></div>}
+                            <a href={`https://connect.clever.gy/houses/${selectedHouseId}/house-detail`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1 break-all">https://connect.clever.gy/houses/:houseId/house-detail</a>
+                            {houseDetailsStep.status === 'done' && <div className="mb-1 text-xs break-all">houseId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{selectedHouseId}</span></div>}
                             {houseDetailsStep.logId && <a href={`#${houseDetailsStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(houseDetailsStep.logId);}}>Ver en consola</a>}
                           </ShadTooltipContent>
                         </ShadTooltip>
