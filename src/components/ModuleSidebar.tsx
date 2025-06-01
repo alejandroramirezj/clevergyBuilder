@@ -1924,6 +1924,22 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
             <div className="flex items-center gap-2 mb-3">
               <Lock size={18} className="text-teal-600" />
               <h3 className="font-semibold text-gray-800">Autenticación</h3>
+              <ShadTooltipProvider>
+                <ShadTooltip>
+                  <ShadTooltipTrigger asChild>
+                    <span className="align-middle inline-flex"><Info size={18} className="text-blue-500 cursor-help" /></span>
+                  </ShadTooltipTrigger>
+                  <ShadTooltipContent className="max-w-xs">
+                    <div className="mb-1 text-xs text-gray-700 font-semibold">¿Por qué autenticarse?</div>
+                    <div className="text-xs text-gray-600 mb-1">Para ver los módulos privados necesitas:</div>
+                    <ul className="text-xs text-gray-600 mb-1 pl-3 list-disc">
+                      <li><b>Token</b>: acceso a los datos</li>
+                      <li><b>houseId</b>: saber qué casa mostrar</li>
+                    </ul>
+                    <div className="text-xs text-gray-400">Ambos se añaden como atributos a cada módulo.</div>
+                  </ShadTooltipContent>
+                </ShadTooltip>
+              </ShadTooltipProvider>
             </div>
             <div className="space-y-3">
               <div>
