@@ -40,6 +40,10 @@ const PlatformBuilder = () => {
     }
   }, [stylesVars]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleModuleDrop = (module) => {
     setSelectedModules(prev => [{ ...module, id: Date.now() }, ...prev]);
   };

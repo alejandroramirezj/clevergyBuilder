@@ -266,7 +266,16 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
             </div>
           </div>
         ) : (
-          <div className="flex mx-auto gap-[10px] items-start" style={{ minHeight: 400, height: 'calc(100vh - 120px)', maxWidth: 1200, width: '100%', paddingLeft: 24, paddingRight: 24, boxSizing: 'border-box' }}>
+          <div className="flex mx-auto gap-[10px] items-start" style={{ 
+            minHeight: 400, 
+            height: 'calc(100vh - 120px)', 
+            maxWidth: 1200, 
+            width: '100%', 
+            paddingLeft: 24, 
+            paddingRight: 24, 
+            boxSizing: 'border-box',
+            justifyContent: showCode ? 'flex-start' : 'center'
+          }}>
             <div style={{ ...moduleContainerStyle, height: '100%' }}>
               <style>{clevergyVarsBlock}</style>
               {modules.map((module, idx) => (
