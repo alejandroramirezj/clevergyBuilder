@@ -1346,22 +1346,37 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   // Referencia al contenedor con overflow-y-auto para hacer scroll automático
   const sidebarScrollRef = useRef(null);
 
-  // Efecto para hacer scroll hacia arriba cuando cambie el contenido del sidebar
+  // Ref para el banner de bienvenida
+  const welcomeBannerRef = useRef(null);
+
+  // Efecto para hacer scroll al banner de bienvenida al cargar la web
   useEffect(() => {
-    if (sidebarScrollRef.current) {
+    if (showWelcome && welcomeBannerRef.current && sidebarScrollRef.current) {
+      welcomeBannerRef.current.scrollIntoView({ behavior: 'auto', block: 'start' });
+    } else if (sidebarScrollRef.current) {
+      sidebarScrollRef.current.scrollTo({
+        top: 0,
+        behavior: 'auto'
+      });
+    }
+  }, [showWelcome]);
+
+  // Efecto para hacer scroll hacia abajo solo si el onboarding NO está visible
+  useEffect(() => {
+    if (!showWelcome && sidebarScrollRef.current) {
       sidebarScrollRef.current.scrollTo({
         top: sidebarScrollRef.current.scrollHeight,
         behavior: 'smooth'
       });
     }
-  }, [houses.length, savedStyles.length, modules.length, showStyles, showExamples, privadosDropdownOpen]);
+  }, [showWelcome, houses.length, savedStyles.length, modules.length, showStyles, showExamples, privadosDropdownOpen]);
 
   return (
     <div ref={sidebarRef} className="flex flex-col bg-white border-r border-gray-200 w-[360px]" style={{ height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
       <div ref={sidebarScrollRef} className="flex-1 overflow-y-auto p-4" style={{ height: '100%' }}>
         {/* Banner de bienvenida */}
         {showWelcome && (
-          <div className="mb-6 bg-gradient-to-br from-blue-50 to-teal-50 rounded-xl border border-blue-100 shadow-sm p-4">
+          <div ref={welcomeBannerRef} className="mb-6 bg-gradient-to-br from-blue-50 to-teal-50 rounded-xl border border-blue-100 shadow-sm p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">✨</span>
