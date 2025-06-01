@@ -1828,7 +1828,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               {(!token || !selectedHouseId) && (
                 <div className="flex items-center gap-2 mb-4 bg-orange-50 border border-orange-200 text-orange-800 rounded-lg px-3 py-2 text-xs font-medium">
                   <Info size={16} className="text-orange-400" />
-                  <span>Necesitas autenticarte y seleccionar una casa para poder arrastrar los módulos privados. Puedes ver y personalizar sus atributos igualmente.</span>
+                  <span>Estos módulos requieren autenticación. Puedes arrastrarlos y personalizarlos, pero como no hay datos de la casa seleccionada, la previsualización estará vacía.</span>
                 </div>
               )}
               {/* Agrupa los módulos privados por categoría en dropdowns */}
@@ -1850,13 +1850,12 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                           const htmlTag = module.htmlTag
                             .replace(/data-token="[^"]*"/, `data-token="${token || ''}"`)
                             .replace(/data-house-id="[^"]*"/, `data-house-id="${selectedHouseId || ''}"`);
-                          const isDisabled = !token || !selectedHouseId;
                           return (
                             <div
                               key={module.id}
-                              className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group transition-shadow flex flex-col gap-1 ${isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-grab hover:shadow-md'}`}
-                              draggable={!isDisabled}
-                              onDragStart={isDisabled ? undefined : (e => handleDragStart(e, { ...module, htmlTag }))}
+                              className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group transition-shadow flex flex-col gap-1 cursor-grab hover:shadow-md`}
+                              draggable={true}
+                              onDragStart={e => handleDragStart(e, { ...module, htmlTag })}
                               style={{ marginBottom: 4 }}
                             >
                               <div className="flex items-center justify-between w-full gap-2">
@@ -1903,7 +1902,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                                 }));
                                               }}
                                               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                              disabled={isDisabled}
+                                              disabled={false}
                                             />
                                             <span className="text-xs text-gray-600">Activar</span>
                                           </div>
@@ -1917,7 +1916,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                               }));
                                             }}
                                             className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
-                                            disabled={isDisabled}
+                                            disabled={false}
                                           >
                                             <option value="ENERGY">ENERGY</option>
                                             <option value="CURRENCY">CURRENCY</option>
@@ -1932,7 +1931,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                               }));
                                             }}
                                             className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
-                                            disabled={isDisabled}
+                                            disabled={false}
                                           >
                                             <option value="" disabled>Elige idioma...</option>
                                             <option value="es-ES">es-ES</option>
@@ -1951,7 +1950,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                             }}
                                             className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
                                             placeholder={String(val)}
-                                            disabled={isDisabled}
+                                            disabled={false}
                                           />
                                         )}
                                       </div>
@@ -1992,13 +1991,12 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                         const htmlTag = module.htmlTag
                           .replace(/data-token="[^"]*"/, `data-token="${token || ''}"`)
                           .replace(/data-house-id="[^"]*"/, `data-house-id="${selectedHouseId || ''}"`);
-                        const isDisabled = !token || !selectedHouseId;
                         return (
                           <div
                             key={module.id}
-                            className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group transition-shadow flex flex-col gap-1 ${isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-grab hover:shadow-md'}`}
-                            draggable={!isDisabled}
-                            onDragStart={isDisabled ? undefined : (e => handleDragStart(e, { ...module, htmlTag }))}
+                            className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group transition-shadow flex flex-col gap-1 cursor-grab hover:shadow-md`}
+                            draggable={true}
+                            onDragStart={e => handleDragStart(e, { ...module, htmlTag })}
                             style={{ marginBottom: 4 }}
                           >
                             <div className="flex items-center justify-between w-full gap-2">
@@ -2021,18 +2019,12 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                                 {showCustom ? 'Ocultar' : 'Personalizar'}
                               </button>
                             </div>
-                            {isDisabled && (
-                              <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center rounded-lg pointer-events-none z-10">
-                                <span className="text-xs text-gray-500 font-semibold">Requiere autenticación</span>
-                              </div>
-                            )}
                             {showCustom && (
                               <div className="mt-2 space-y-2">
                                 {Object.entries(attrs).map(([attr, val]) => {
                                   const isBoolean = val === 'true' || val === 'false';
                                   const isUnit = attr === 'data-unit';
                                   const isLanguage = attr === 'data-language';
-                                  const isDisabled = !!(module.auth && (!token || !selectedHouseId));
                                   return (
                                     <div key={attr} className="flex flex-col gap-1">
                                       <label className="text-xs text-gray-500 flex items-center gap-1">
