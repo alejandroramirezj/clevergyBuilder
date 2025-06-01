@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Search, Plus, Zap, Trash2, Sun, Plug, Star, User, Lock, Info, Flame, Award, Paintbrush } from 'lucide-react';
+import { Search, Plus, Zap, Trash2, Sun, Plug, Star, User, Lock, Info, Flame, Award, Paintbrush, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import ReactDOM from 'react-dom';
 import { useApiConsole } from './ApiConsoleContext';
@@ -341,19 +341,32 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   // Estado para mostrar el input de edición de emoji
   const [editingEmoji, setEditingEmoji] = useState(false);
   const [houseDetails, setHouseDetails] = useState<Record<string, HouseDetail>>({});
-  const [showWelcome, setShowWelcome] = useState(() => {
-    // Persistencia en localStorage para no mostrarlo siempre
+  // Estado para el stepper de bienvenida
+  const [welcomeSteps, setWelcomeSteps] = useState(() => {
     try {
-      return localStorage.getItem('clevergy-hide-welcome') !== '1';
+      const savedSteps = localStorage.getItem('clevergy-welcome-steps');
+      if (savedSteps) {
+        return JSON.parse(savedSteps);
+      }
+    } catch {/* vacío */}
+    return {
+      dragModule: false,
+      customize: false,
+      visualize: false
+    };
+  });
+  // Estado para mostrar el mensaje de bienvenida
+  const [showWelcome, setShowWelcome] = useState(() => {
+    try {
+      const savedSteps = localStorage.getItem('clevergy-welcome-steps');
+      if (savedSteps) {
+        const steps = JSON.parse(savedSteps);
+        return !(steps.dragModule && steps.customize && steps.visualize);
+      }
+      return true;
     } catch {
       return true;
     }
-  });
-  // Estado para el stepper de bienvenida
-  const [welcomeSteps, setWelcomeSteps] = useState({
-    dragModule: false,
-    customize: false,
-    visualize: false
   });
 
   // Ejemplo de definición de módulos con categoría
@@ -750,10 +763,12 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
 
   // Función para actualizar el estado del stepper
   const updateWelcomeStep = (step) => {
-    setWelcomeSteps(prev => ({
-      ...prev,
-      [step]: true
-    }));
+    setWelcomeSteps(prev => {
+      const newState = { ...prev, [step]: true };
+      // Disparar evento para notificar cambios
+      window.dispatchEvent(new Event('onboardingStepsChanged'));
+      return newState;
+    });
   };
 
   // Modificar handleDragStart para actualizar el primer paso
@@ -773,19 +788,30 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     const moduleWithCustom = { ...module, htmlTag };
     e.dataTransfer.setData('application/json', JSON.stringify(moduleWithCustom));
     e.dataTransfer.effectAllowed = 'move';
-    
-    // Si es el módulo de precios de energía, lanzar confeti SOLO si el paso no está completado
-    if (module.id === 'energy-prices' && !welcomeSteps.dragModule) {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      updateWelcomeStep('dragModule');
-    } else if (module.id === 'energy-prices') {
-      updateWelcomeStep('dragModule');
-    }
   };
+
+  // Añadir efecto para escuchar cuando se suelta un módulo en el preview
+  useEffect(() => {
+    const handleModuleDrop = (event) => {
+      try {
+        const moduleData = JSON.parse(event.dataTransfer.getData('application/json'));
+        if (moduleData.id === 'energy-prices' && !isOnboardingComplete()) {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+          updateWelcomeStep('dragModule');
+        }
+      } catch (error) {
+        console.error('Error al procesar el módulo:', error);
+      }
+    };
+
+    // Añadir el listener al documento
+    document.addEventListener('drop', handleModuleDrop);
+    return () => document.removeEventListener('drop', handleModuleDrop);
+  }, []);
 
   const categoryInfo = {
     "Energía": { icon: <Zap size={18} />, iconBg: "bg-yellow-100", border: "border-yellow-300", chip: "focus:ring-yellow-300" },
@@ -847,12 +873,14 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     setFeedback('¡Estilo cargado!');
     setTimeout(() => setFeedback(''), 1200);
     
-    // Lanzar confeti al cambiar el tema y actualizar el paso
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    // Lanzar confeti solo si el onboarding no está completo
+    if (!isOnboardingComplete()) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
     updateWelcomeStep('customize');
   };
 
@@ -1210,7 +1238,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   useEffect(() => {
     window.completeOnboardingVisualizeStep = () => {
       setWelcomeSteps(prev => {
-        if (!prev.visualize) {
+        if (!prev.visualize && !isOnboardingComplete()) {
           confetti({
             particleCount: 100,
             spread: 70,
@@ -1228,13 +1256,62 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     window.welcomeSteps = welcomeSteps;
   }, [welcomeSteps]);
 
+  // Función para verificar si el onboarding está completo
+  const isOnboardingComplete = () => {
+    // Verificar si ya se completó previamente
+    try {
+      const savedSteps = localStorage.getItem('clevergy-welcome-steps');
+      if (savedSteps) {
+        const parsedSteps = JSON.parse(savedSteps);
+        if (parsedSteps.dragModule && parsedSteps.customize && parsedSteps.visualize) {
+          return true;
+        }
+      }
+    } catch {/* vacío */}
+    return welcomeSteps.dragModule && welcomeSteps.customize && welcomeSteps.visualize;
+  };
+
+  // Efecto para guardar los pasos en localStorage cuando cambian
+  useEffect(() => {
+    const saveSteps = () => {
+      if (welcomeSteps.dragModule && welcomeSteps.customize && welcomeSteps.visualize) {
+        try {
+          localStorage.setItem('clevergy-welcome-steps', JSON.stringify(welcomeSteps));
+        } catch {/* vacío */}
+      }
+    };
+    saveSteps();
+  }, [welcomeSteps]);
+
+  // Modificar la lógica del highlight para que solo aparezca si el onboarding no está completo
+  const shouldShowHighlight = (moduleId) => {
+    if (isOnboardingComplete()) return false;
+    if (moduleId === 'energy-prices' && !welcomeSteps.dragModule) return true;
+    return false;
+  };
+
+  // Función para manejar el cierre del onboarding
+  const handleCloseWelcome = () => {
+    if (!isOnboardingComplete()) {
+      // Mostrar mensaje de que debe completar el onboarding
+      alert('Por favor, completa todos los pasos del onboarding antes de cerrarlo.');
+      return;
+    }
+    setShowWelcome(false);
+    try {
+      localStorage.setItem('clevergy-hide-welcome', '1');
+    } catch {/* vacío */}
+  };
+
   // Efecto para detectar cuando se completan todos los pasos
   useEffect(() => {
-    if (welcomeSteps.dragModule && welcomeSteps.customize && welcomeSteps.visualize) {
+    if (isOnboardingComplete()) {
       // Esperar 2 segundos antes de ocultar el mensaje
       const timer = setTimeout(() => {
         setShowWelcome(false);
-        try { localStorage.setItem('clevergy-hide-welcome', '1'); } catch {/* vacío */}
+        try {
+          localStorage.setItem('clevergy-hide-welcome', '1');
+        } catch {/* vacío */}
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -1254,7 +1331,9 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     100% { box-shadow: 0 0 0 6px #ef4444, 0 0 16px 4px #ef4444cc; }
   }
   `;
-  if (typeof window !== 'undefined' && !document.getElementById('onboarding-highlight-style')) {
+
+  // Solo añadir el estilo si el onboarding no está completo
+  if (typeof window !== 'undefined' && !document.getElementById('onboarding-highlight-style') && !isOnboardingComplete()) {
     const style = document.createElement('style');
     style.id = 'onboarding-highlight-style';
     style.innerHTML = onboardingHighlightStyle;
@@ -1262,26 +1341,27 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   }
 
   return (
-    <div className="w-96 h-screen bg-white border-r border-gray-200 flex flex-col">
+    <div className="h-full flex flex-col bg-white border-r border-gray-200 w-[360px]">
       <div className="flex-1 overflow-y-auto p-4">
         {/* Banner de bienvenida */}
         {showWelcome && (
-          <div className="mb-5 bg-gradient-to-br from-blue-50 to-teal-50 border border-blue-100 rounded-xl shadow flex flex-col gap-2 p-4 relative animate-fade-in">
-            <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-lg"
-              onClick={() => {
-                setShowWelcome(false);
-                try { localStorage.setItem('clevergy-hide-welcome', '1'); } catch {/* vacío */}
-              }}
-              aria-label="Cerrar bienvenida"
-            >✕</button>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">✨</span>
-              <span className="font-bold text-base text-teal-800">¡Bienvenido/a al Builder de Clevergy!</span>
+          <div className="mb-6 bg-gradient-to-br from-blue-50 to-teal-50 rounded-xl border border-blue-100 shadow-sm p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">✨</span>
+                <span className="font-bold text-base text-teal-800">¡Bienvenido/a al Builder!</span>
+              </div>
+              <button
+                onClick={handleCloseWelcome}
+                className="text-gray-400 hover:text-gray-600"
+                title={isOnboardingComplete() ? "Cerrar" : "Completa todos los pasos para cerrar"}
+              >
+                <X size={20} />
+              </button>
             </div>
-            {/* Stepper visual compacto y centrado, un poco más grande */}
+            {/* Stepper visual compacto y centrado */}
             <div className="flex items-center justify-center w-full mb-3">
-              <div className="flex items-center justify-center w-full max-w-xs gap-3 mx-auto">
+              <div className="flex items-center justify-center w-full gap-3 mx-auto">
                 {/* Paso 1 */}
                 <div className="flex flex-col items-center w-16">
                   <div
@@ -1322,9 +1402,9 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               </div>
             </div>
             <ol className="list-decimal list-inside text-sm text-gray-700 pl-2 space-y-1">
-              <li><b>Arrastra el módulo de precios de energía</b> desde <span className="bg-blue-100 text-blue-700 rounded px-1">Sin autenticación</span> al área central.</li>
-              <li><b>Personaliza tu apariencia</b> en la sección destacada arriba.</li>
-              <li><b>Visualiza y copia el código</b> generado y revisa las peticiones API en la consola.</li>
+              <li><b>Arrastra el módulo</b> desde <span className="bg-blue-100 text-blue-700 rounded px-1">Sin autenticación</span>.</li>
+              <li><b>Personaliza</b> tu apariencia.</li>
+              <li><b>Visualiza</b> y copia el código.</li>
             </ol>
           </div>
         )}
