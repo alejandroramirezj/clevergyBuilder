@@ -1341,8 +1341,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   }
 
   return (
-    <div className="h-full flex flex-col bg-white border-r border-gray-200 w-[360px]">
-      <div className="flex-1 overflow-y-auto p-4">
+    <div className="flex flex-col bg-white border-r border-gray-200 w-[360px]" style={{ height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
+      <div className="flex-1 overflow-y-auto p-4" style={{ height: '100%' }}>
         {/* Banner de bienvenida */}
         {showWelcome && (
           <div className="mb-6 bg-gradient-to-br from-blue-50 to-teal-50 rounded-xl border border-blue-100 shadow-sm p-4">

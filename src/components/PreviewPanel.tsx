@@ -267,7 +267,7 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
           </div>
         ) : (
           <div className="flex mx-auto gap-[10px] items-start" style={{ 
-            minHeight: 400, 
+            minHeight: '100%', 
             height: 'calc(100vh - 120px)', 
             maxWidth: 1200, 
             width: '100%', 
