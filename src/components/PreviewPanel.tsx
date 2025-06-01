@@ -29,7 +29,7 @@ function generateFullHtml(modulesHtml) {
 
 // Recibo las variables de estilos como prop
 const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => {
-  const [device, setDevice] = React.useState('desktop');
+  const [device, setDevice] = React.useState('mobile');
   const [showCode, setShowCode] = React.useState(false);
   const [draggedOver, setDraggedOver] = useState(false);
   // Estado para feedback de copiar
@@ -42,8 +42,8 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
   };
 
   const deviceOptions = [
-    { key: 'desktop', label: 'Desktop', icon: <Monitor size={16} className="inline mr-1" /> },
     { key: 'mobile', label: 'Mobile', icon: <Smartphone size={16} className="inline mr-1" /> },
+    { key: 'desktop', label: 'Desktop', icon: <Monitor size={16} className="inline mr-1" /> },
   ];
 
   // Define el estilo del contenedor de módulos (siempre igual)
@@ -265,7 +265,7 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
               </div>
             </div>
           </div>
-        ) : showCode ? (
+        ) : (
           <div className="flex mx-auto gap-[10px] items-start" style={{ minHeight: 400, height: 'calc(100vh - 120px)', maxWidth: 1200, width: '100%', paddingLeft: 24, paddingRight: 24, boxSizing: 'border-box' }}>
             <div style={{ ...moduleContainerStyle, height: '100%' }}>
               <style>{clevergyVarsBlock}</style>
@@ -284,45 +284,28 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
               ))}
             </div>
             {/* Columna de código */}
-            <div className="flex-1 bg-gray-900 rounded-xl shadow overflow-auto" style={{ ...codeColStyle, height: '100%', marginRight: device === 'desktop' && showCode ? 24 : 0 }}>
-              <pre className="w-full h-full rounded-lg p-4 text-xs overflow-auto shadow-lg" style={{minHeight: 200, height: '100%', background:'#181825', color:'#ECEFF1', fontFamily:'Fira Mono, monospace', fontSize:'13px', wordBreak: 'break-all', whiteSpace: 'pre-line', border: '1px solid #23272e', position: 'relative'}}>
-                <code style={{display: 'block', lineHeight: 1.7}} dangerouslySetInnerHTML={{__html: highlightedFullHtml}} />
-                <button
-                  title="Copiar HTML generado"
-                  onClick={() => handleCopy(fullHtmlWithAttrsFormatted, 'html')}
-                  style={{position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', cursor: 'pointer'}}>
-                  <Clipboard size={16} color={copied.html ? '#A5D6A7' : '#B0BEC5'} />
-                  {copied.html && <span style={{marginLeft: 6, color: '#A5D6A7', fontSize: 12}}>¡Copiado!</span>}
-                </button>
-              </pre>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-6 justify-center">
-            <div style={moduleContainerStyle}>
-              <style>{clevergyVarsBlock}</style>
-              {modules.map((module, idx) => (
-                <div key={module.id} style={{ position: 'relative', margin: 0, padding: 0, background: 'none', border: 'none' }}>
+            {showCode && (
+              <div className="flex-1 bg-gray-900 rounded-xl shadow overflow-auto" style={{ ...codeColStyle, height: '100%', marginRight: device === 'desktop' ? 24 : 0 }}>
+                <pre className="w-full h-full rounded-lg p-4 text-xs overflow-auto shadow-lg" style={{minHeight: 200, height: '100%', background:'#181825', color:'#ECEFF1', fontFamily:'Fira Mono, monospace', fontSize:'13px', wordBreak: 'break-all', whiteSpace: 'pre-line', border: '1px solid #23272e', position: 'relative'}}>
+                  <code style={{display: 'block', lineHeight: 1.7}} dangerouslySetInnerHTML={{__html: highlightedFullHtml}} />
                   <button
-                    onClick={() => onModuleRemove(module.id)}
-                    className="absolute top-2 right-2 z-30 p-1.5 bg-white border border-gray-200 rounded-full shadow-lg transition-opacity opacity-80 hover:opacity-100 hover:bg-red-50"
-                    title="Eliminar módulo"
-                    style={{ boxShadow: '0 2px 8px 0 rgba(0,0,0,0.10)' }}
-                  >
-                    <Trash2 size={16} className="text-red-500" />
+                    title="Copiar HTML generado"
+                    onClick={() => handleCopy(fullHtmlWithAttrsFormatted, 'html')}
+                    style={{position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', cursor: 'pointer'}}>
+                    <Clipboard size={16} color={copied.html ? '#A5D6A7' : '#B0BEC5'} />
+                    {copied.html && <span style={{marginLeft: 6, color: '#A5D6A7', fontSize: 12}}>¡Copiado!</span>}
                   </button>
-                  <div dangerouslySetInnerHTML={{ __html: module.htmlTag }} />
-                </div>
-              ))}
-            </div>
+                </pre>
+              </div>
+            )}
           </div>
         )}
         {/* Device Info */}
         {!showCode && (
-        <div className="mt-4 text-center text-sm text-gray-500">
-          {device === 'desktop' && 'Vista desktop (1200px+)'}
-          {device === 'mobile' && 'Vista mobile (375px)'}
-        </div>
+          <div className="mt-4 text-center text-sm text-gray-500">
+            {device === 'desktop' && 'Vista desktop (1200px+)'}
+            {device === 'mobile' && 'Vista mobile (375px)'}
+          </div>
         )}
       </div>
     </div>
