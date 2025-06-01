@@ -2101,7 +2101,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               {(!token || !selectedHouseId) && (
                 <div className="flex items-center gap-2 mb-4 bg-orange-50 border border-orange-200 text-orange-800 rounded-lg px-3 py-2 text-xs font-medium">
                   <Info size={16} className="text-orange-400" />
-                  <span>Estos módulos requieren autenticación. Puedes arrastrarlos y personalizarlos, pero como no hay datos de la casa seleccionada, la previsualización estará vacía.</span>
+                  <span>Puedes arrastrar y personalizar estos módulos, pero sin una casa seleccionada se mostrarán vacíos.</span>
                 </div>
               )}
               {/* Agrupa los módulos privados por categoría en dropdowns */}
