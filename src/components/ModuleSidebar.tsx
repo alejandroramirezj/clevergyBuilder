@@ -17,6 +17,7 @@ import {
 declare global {
   interface Window {
     completeOnboardingVisualizeStep?: () => void;
+    welcomeSteps?: { dragModule: boolean; customize: boolean; visualize: boolean };
   }
 }
 
@@ -773,13 +774,15 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     e.dataTransfer.setData('application/json', JSON.stringify(moduleWithCustom));
     e.dataTransfer.effectAllowed = 'move';
     
-    // Si es el módulo de precios de energía, lanzar confeti y actualizar el paso
-    if (module.id === 'energy-prices') {
+    // Si es el módulo de precios de energía, lanzar confeti SOLO si el paso no está completado
+    if (module.id === 'energy-prices' && !welcomeSteps.dragModule) {
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 }
       });
+      updateWelcomeStep('dragModule');
+    } else if (module.id === 'energy-prices') {
       updateWelcomeStep('dragModule');
     }
   };
@@ -1220,6 +1223,11 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     return () => { delete window.completeOnboardingVisualizeStep; };
   }, []);
 
+  // Sincronizar welcomeSteps con window para el onboarding global
+  useEffect(() => {
+    window.welcomeSteps = welcomeSteps;
+  }, [welcomeSteps]);
+
   // Efecto para detectar cuando se completan todos los pasos
   useEffect(() => {
     if (welcomeSteps.dragModule && welcomeSteps.customize && welcomeSteps.visualize) {
@@ -1231,6 +1239,27 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       return () => clearTimeout(timer);
     }
   }, [welcomeSteps]);
+
+  // Añadir el CSS para la clase onboarding-highlight
+  const onboardingHighlightStyle = `
+  .onboarding-highlight {
+    box-shadow: 0 0 0 3px #ef4444, 0 0 8px 2px #ef4444aa;
+    border: 2px solid #ef4444 !important;
+    border-radius: 10px !important;
+    animation: onboarding-pulse 1s infinite alternate;
+    z-index: 1000;
+  }
+  @keyframes onboarding-pulse {
+    0% { box-shadow: 0 0 0 3px #ef4444, 0 0 8px 2px #ef4444aa; }
+    100% { box-shadow: 0 0 0 6px #ef4444, 0 0 16px 4px #ef4444cc; }
+  }
+  `;
+  if (typeof window !== 'undefined' && !document.getElementById('onboarding-highlight-style')) {
+    const style = document.createElement('style');
+    style.id = 'onboarding-highlight-style';
+    style.innerHTML = onboardingHighlightStyle;
+    document.head.appendChild(style);
+  }
 
   return (
     <div className="w-96 h-screen bg-white border-r border-gray-200 flex flex-col">
@@ -1322,8 +1351,9 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               const isActive = JSON.stringify(stylesVars) === JSON.stringify(s.vars);
               const isEditable = !['Cangrejo Rosa', 'Gas Naranja', 'Clevergy'].includes(s.name) ? true : false;
               const isDefault = ['Cangrejo Rosa', 'Gas Naranja', 'Clevergy'].includes(s.name);
+              const highlightCrab = welcomeSteps.dragModule && !welcomeSteps.customize && s.name === 'Cangrejo Rosa';
               return (
-                <div key={s.name} className="flex items-center gap-2 w-full group relative">
+                <div key={s.name} className={`flex items-center gap-2 w-full group relative${highlightCrab ? ' onboarding-highlight' : ''}`}>
                   <span className="text-xs text-gray-400 w-4 text-right">{idx + 1}.</span>
                   <button
                     className={`flex-1 text-left px-2 py-1 text-xs rounded-lg border border-gray-200 transition-colors flex items-center gap-2 ${isActive ? 'bg-gray-200 font-bold text-blue-700' : 'bg-white hover:bg-blue-50'}`}
@@ -1659,10 +1689,11 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                         {publicMods.map(module => {
                           const attrs = extractAttrs(module.htmlTag);
                           const showCustom = customAttrs[module.id]?.show || false;
+                          const highlightEnergy = !welcomeSteps.dragModule && module.id === 'energy-prices';
                           return (
                             <div
                               key={module.id}
-                              className="relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group cursor-grab hover:shadow-md transition-shadow flex flex-col gap-1"
+                              className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group cursor-grab hover:shadow-md transition-shadow flex flex-col gap-1${highlightEnergy ? ' onboarding-highlight' : ''}`}
                               draggable
                               onDragStart={e => handleDragStart(e, module)}
                               style={{ marginBottom: 4 }}

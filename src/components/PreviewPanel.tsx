@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { ExternalLink, Smartphone, Monitor, Tablet, Code, Clipboard, Trash2, Move } from 'lucide-react';
 import ClervergyModules from './ClervergyModules';
 
+declare global {
+  interface Window {
+    welcomeSteps?: { dragModule: boolean; customize: boolean; visualize: boolean };
+  }
+}
+
 // Función para generar el HTML completo
 function generateFullHtml(modulesHtml) {
   return `<!DOCTYPE html>
@@ -28,6 +34,7 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
   const [draggedOver, setDraggedOver] = useState(false);
   // Estado para feedback de copiar
   const [copied, setCopied] = useState({ style: false, html: false });
+  const [onboardingStepVersion, setOnboardingStepVersion] = useState(0);
 
   const deviceSizes = {
     desktop: { width: '700px', height: '800px' },
@@ -181,6 +188,23 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
     ? { minWidth: 600, maxWidth: '50%' }
     : { minWidth: 0, maxWidth: '50%' };
 
+  useEffect(() => {
+    window.welcomeSteps = window.welcomeSteps || { dragModule: false, customize: false, visualize: false };
+  }, []);
+
+  useEffect(() => {
+    const handler = () => setOnboardingStepVersion(v => v + 1);
+    window.addEventListener('onboardingStepsChanged', handler);
+    return () => window.removeEventListener('onboardingStepsChanged', handler);
+  }, []);
+
+  const shouldHighlightCodeBtn =
+    typeof window !== 'undefined' &&
+    window.welcomeSteps &&
+    window.welcomeSteps.dragModule &&
+    window.welcomeSteps.customize &&
+    !window.welcomeSteps.visualize;
+
   return (
     <div className="h-full bg-gray-100 flex flex-col">
       {/* Preview Toolbar */}
@@ -199,7 +223,7 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
             ))}
           </div>
           <button
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${showCode ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${showCode ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}${shouldHighlightCodeBtn ? ' onboarding-highlight' : ''}`}
             onClick={() => {
               setShowCode(v => !v);
               if (typeof window !== 'undefined' && window.completeOnboardingVisualizeStep) {
