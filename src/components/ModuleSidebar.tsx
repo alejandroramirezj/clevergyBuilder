@@ -5,6 +5,12 @@ import ReactDOM from 'react-dom';
 import { useApiConsole } from './ApiConsoleContext';
 import HouseStatusIcons from './HouseStatusIcons';
 import { House, HouseDetail } from '@/types/house';
+import {
+  Tooltip as ShadTooltip,
+  TooltipContent as ShadTooltipContent,
+  TooltipProvider as ShadTooltipProvider,
+  TooltipTrigger as ShadTooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Estado para estilos globales
 const defaultStyles = {
@@ -200,6 +206,52 @@ function getRandomEmoji() {
   return EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
 }
 
+// SVG de círculo progresivo para el stepper
+const StepCircle = ({ status }: { status: 'pending' | 'inprogress' | 'done' }) => {
+  let color = '#d1d5db'; // gris
+  let percent = 0;
+  if (status === 'inprogress') {
+    color = '#3b82f6'; // azul
+    percent = 50;
+  }
+  if (status === 'done') {
+    color = '#22c55e'; // verde
+    percent = 100;
+  }
+  const radius = 12;
+  const stroke = 3;
+  const normalizedRadius = radius - stroke / 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const strokeDashoffset = circumference - (percent / 100) * circumference;
+  return (
+    <svg height={radius * 2} width={radius * 2}>
+      <circle
+        stroke="#e5e7eb"
+        fill="white"
+        strokeWidth={stroke}
+        r={normalizedRadius}
+        cx={radius}
+        cy={radius}
+      />
+      <circle
+        stroke={color}
+        fill="transparent"
+        strokeWidth={stroke}
+        strokeDasharray={circumference + ' ' + circumference}
+        style={{ strokeDashoffset, transition: 'stroke-dashoffset 0.4s, stroke 0.4s' }}
+        r={normalizedRadius}
+        cx={radius}
+        cy={radius}
+      />
+    </svg>
+  );
+};
+
+// Utilidad para badge de método
+const MethodBadge = ({ method = 'GET' }) => (
+  <span className="inline-block bg-teal-200 text-teal-800 text-xs font-bold rounded px-2 py-0.5 mr-2 align-middle">{method}</span>
+);
+
 const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars }) => {
   const [houseId, setHouseId] = useState("");
   const [token, setToken] = useState("");
@@ -251,7 +303,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   const [email, setEmail] = useState("");
   const [houses, setHouses] = useState<House[]>([]);
   const [selectedHouseId, setSelectedHouseId] = useState("");
-  const { logApiCall } = useApiConsole();
+  const { logApiCall, logs } = useApiConsole();
   // Estado para los dropdowns abiertos/cerrados
   const [authDropdownOpen, setAuthDropdownOpen] = useState(false); // cerrado por defecto
   const [privadosDropdownOpen, setPrivadosDropdownOpen] = useState(false); // cerrado por defecto
@@ -955,9 +1007,145 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     // Ya no se pide el token aquí, porque ya se obtuvo antes
   };
 
+  // Detectar pasos completados
+  let userIdStep = { status: 'pending', userId: null, logId: null };
+  let housesStep = { status: 'pending', userId: null, logId: null };
+  let houseDetailsStep = { status: 'pending', houseId: null, logId: null };
+
+  // Paso 1: Buscar userId
+  const userLog = logs.find(log => log.method === 'GET' && log.url.includes('/users?'));
+  if (userLog) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const resp = userLog.response as any;
+    if (resp && resp.elements && resp.elements[0]?.id) {
+      userIdStep = { status: 'done', userId: resp.elements[0].id, logId: `api-get-userid-${resp.elements[0].id}` };
+    } else {
+      userIdStep = { status: 'inprogress', userId: null, logId: null };
+    }
+  }
+
+  // Paso 2: Obtener casas
+  const housesLog = logs.find(log => log.method === 'GET' && /\/users\/.+\/supplies/.test(log.url));
+  if (housesLog) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const resp = housesLog.response as any;
+    if ((Array.isArray(resp) && resp.length > 0) || (resp && resp.elements)) {
+      const uid = housesLog.url.match(/\/users\/([\w-]+)\/supplies/);
+      housesStep = { status: 'done', userId: uid ? uid[1] : null, logId: uid ? `api-get-houses-${uid[1]}` : null };
+    } else {
+      housesStep = { status: 'inprogress', userId: null, logId: null };
+    }
+  }
+
+  // Paso 3: Obtener detalles de la casa
+  const selectedHouseIdForStep = selectedHouseId;
+  const houseDetailsLog = logs.find(log => log.method === 'GET' && /\/houses\/.+\/house-detail/.test(log.url) && log.url.includes(selectedHouseIdForStep));
+  if (houseDetailsLog && houseDetailsLog.status && houseDetailsLog.status >= 200 && houseDetailsLog.status < 300) {
+    houseDetailsStep = { status: 'done', houseId: selectedHouseIdForStep, logId: `api-get-house-details-${selectedHouseIdForStep}` };
+  } else if (houseDetailsLog) {
+    houseDetailsStep = { status: 'inprogress', houseId: selectedHouseIdForStep, logId: null };
+  }
+
+  // Render del stepper
+  const steps = [
+    {
+      label: 'Buscar userId',
+      status: userIdStep.status,
+      logId: userIdStep.logId,
+      tooltip: (
+        <div>
+          <div className="font-semibold mb-1">Buscar userId</div>
+          <div>Petición GET para buscar el usuario por email.</div>
+          {userIdStep.logId && (
+            <button
+              className="mt-2 underline text-blue-600 text-xs"
+              onClick={() => scrollToStep(userIdStep.logId)}
+            >Ir a la petición en la consola</button>
+          )}
+        </div>
+      ),
+    },
+    {
+      label: 'Obtener casas',
+      status: housesStep.status,
+      logId: housesStep.logId,
+      tooltip: (
+        <div>
+          <div className="font-semibold mb-1">Obtener casas</div>
+          <div>Petición GET para obtener las casas del usuario.</div>
+          {housesStep.logId && (
+            <button
+              className="mt-2 underline text-blue-600 text-xs"
+              onClick={() => scrollToStep(housesStep.logId)}
+            >Ir a la petición en la consola</button>
+          )}
+        </div>
+      ),
+    },
+    {
+      label: 'Detalles de la casa',
+      status: houseDetailsStep.status,
+      logId: houseDetailsStep.logId,
+      tooltip: (
+        <div>
+          <div className="font-semibold mb-1">Detalles de la casa</div>
+          <div>Petición GET para obtener los detalles de la casa seleccionada.</div>
+          {houseDetailsStep.logId && (
+            <button
+              className="mt-2 underline text-blue-600 text-xs"
+              onClick={() => scrollToStep(houseDetailsStep.logId)}
+            >Ir a la petición en la consola</button>
+          )}
+        </div>
+      ),
+    },
+  ];
+
+  function scrollToStep(logId: string | null) {
+    if (!logId) return;
+    const el = document.getElementById(logId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('ring-2', 'ring-blue-400');
+      setTimeout(() => {
+        el.classList.remove('ring-2', 'ring-blue-400');
+      }, 2000);
+    }
+  }
+
   return (
     <div className="w-96 h-screen bg-white border-r border-gray-200 flex flex-col">
       <div className="flex-1 overflow-y-auto p-4">
+        {/* Barra de pasos */}
+        <ShadTooltipProvider>
+          <div className="flex items-center justify-center gap-0 mb-6">
+            {steps.map((step, idx) => (
+              <div key={step.label} className="flex items-center">
+                <ShadTooltip>
+                  <ShadTooltipTrigger asChild>
+                    <button
+                      className={`flex flex-col items-center px-2 focus:outline-none ${step.status === 'done' ? 'text-green-600' : step.status === 'inprogress' ? 'text-blue-600' : 'text-gray-400'}`}
+                      onClick={() => scrollToStep(step.logId)}
+                      disabled={!step.logId}
+                      style={{ cursor: step.logId ? 'pointer' : 'not-allowed', background: 'none', border: 'none' }}
+                    >
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 ${step.status === 'done' ? 'border-green-500 bg-green-100' : step.status === 'inprogress' ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-gray-50'}`}>
+                        {step.status === 'done' ? '✔️' : step.status === 'inprogress' ? <span className="w-2 h-2 bg-blue-400 rounded-full block" /> : <span className="w-2 h-2 bg-gray-300 rounded-full block" />}
+                      </div>
+                      <span className="text-xs mt-1 whitespace-nowrap">{step.label}</span>
+                    </button>
+                  </ShadTooltipTrigger>
+                  <ShadTooltipContent>
+                    {step.tooltip}
+                  </ShadTooltipContent>
+                </ShadTooltip>
+                {idx < steps.length - 1 && (
+                  <div className={`h-1 w-8 ${steps[idx].status === 'done' ? 'bg-green-400' : 'bg-gray-200'} mx-1 rounded`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </ShadTooltipProvider>
         {/* 2. Personaliza tu apariencia */}
         <div className="mb-6">
       <div className="p-4 border-b border-gray-100 relative">
@@ -1510,194 +1698,126 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                   )}
                   {houses.length > 0 && (
                     <div className="mt-2">
+                      <div className="flex flex-col items-center w-full mb-2">
+                        <div className="flex items-center justify-center w-full gap-4 mb-2">
+                          {/* Paso 1: Buscar userId */}
+                          <ShadTooltipProvider>
+                            <ShadTooltip>
+                              <ShadTooltipTrigger asChild>
+                                <div className="flex flex-col items-center cursor-pointer">
+                                  <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
+                                  <span className="text-xs mt-1">userId</span>
+                                </div>
+                              </ShadTooltipTrigger>
+                              <ShadTooltipContent className="max-w-xs">
+                                <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                                <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
+                                  <MethodBadge method="GET" />
+                                  <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users?email={email}</span>
+                                </div>
+                                <a href="https://docs.clever.gy/connect-api/get-users" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">@https://docs.clever.gy/connect-api/get-users</a>
+                                {userIdStep.userId && <div className="mb-1 text-xs">userId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{userIdStep.userId}</span></div>}
+                                {userIdStep.logId && <a href={`#${userIdStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(userIdStep.logId);}}>Ver en consola</a>}
+                              </ShadTooltipContent>
+                            </ShadTooltip>
+                          </ShadTooltipProvider>
+                          <div className="h-0.5 w-6 bg-gray-200 rounded" />
+                          {/* Paso extra: Token */}
+                          <ShadTooltipProvider>
+                            <ShadTooltip>
+                              <ShadTooltipTrigger asChild>
+                                <div className="flex flex-col items-center cursor-pointer">
+                                  <StepCircle status={userIdStep.status as 'pending' | 'inprogress' | 'done'} />
+                                  <span className="text-xs mt-1">Token</span>
+                                </div>
+                              </ShadTooltipTrigger>
+                              <ShadTooltipContent className="max-w-xs">
+                                <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                                <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
+                                  <MethodBadge method="GET" />
+                                  <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/auth/{userIdStep.userId}/token</span>
+                                </div>
+                                <span className="text-blue-600 text-xs">@https://connect.clever.gy/auth/:userId/token</span>
+                                {userIdStep.logId && <a href={`#${userIdStep.logId}`} className="text-blue-600 underline text-xs block mt-1" onClick={e => {e.preventDefault(); scrollToStep(userIdStep.logId);}}>Ver en consola</a>}
+                              </ShadTooltipContent>
+                            </ShadTooltip>
+                          </ShadTooltipProvider>
+                          <div className="h-0.5 w-6 bg-gray-200 rounded" />
+                          {/* Paso 2: Casas */}
+                          <ShadTooltipProvider>
+                            <ShadTooltip>
+                              <ShadTooltipTrigger asChild>
+                                <div className="flex flex-col items-center cursor-pointer">
+                                  <StepCircle status={housesStep.status as 'pending' | 'inprogress' | 'done'} />
+                                  <span className="text-xs mt-1">Casas</span>
+                                </div>
+                              </ShadTooltipTrigger>
+                              <ShadTooltipContent className="max-w-xs">
+                                <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                                <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
+                                  <MethodBadge method="GET" />
+                                  <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users/{userIdStep.userId}/supplies</span>
+                                </div>
+                                <span className="text-blue-600 text-xs">@GET https://connect.clever.gy/users/:userId/supplies</span>
+                                {housesStep.status === 'done' && <div className="mb-1 text-xs">Casas: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{houses.length}</span></div>}
+                                {housesStep.logId && <a href={`#${housesStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(housesStep.logId);}}>Ver en consola</a>}
+                              </ShadTooltipContent>
+                            </ShadTooltip>
+                          </ShadTooltipProvider>
+                          <div className="h-0.5 w-6 bg-gray-200 rounded" />
+                          {/* Paso 3: Detalles */}
+                          <ShadTooltipProvider>
+                            <ShadTooltip>
+                              <ShadTooltipTrigger asChild>
+                                <div className="flex flex-col items-center cursor-pointer">
+                                  <StepCircle status={houseDetailsStep.status as 'pending' | 'inprogress' | 'done'} />
+                                  <span className="text-xs mt-1">Detalles</span>
+                                </div>
+                              </ShadTooltipTrigger>
+                              <ShadTooltipContent className="max-w-xs">
+                                <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                                <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
+                                  <MethodBadge method="GET" />
+                                  <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/houses/{selectedHouseId}/house-detail</span>
+                                </div>
+                                <a href={`https://connect.clever.gy/houses/${selectedHouseId}/house-detail`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block mb-1">@https://connect.clever.gy/houses/:houseId/house-detail</a>
+                                {houseDetailsStep.status === 'done' && <div className="mb-1 text-xs">houseId: <span className="bg-yellow-200 px-1 rounded font-mono text-gray-900">{selectedHouseId}</span></div>}
+                                {houseDetailsStep.logId && <a href={`#${houseDetailsStep.logId}`} className="text-blue-600 underline text-xs" onClick={e => {e.preventDefault(); scrollToStep(houseDetailsStep.logId);}}>Ver en consola</a>}
+                              </ShadTooltipContent>
+                            </ShadTooltip>
+                          </ShadTooltipProvider>
+                        </div>
+                      </div>
+                      {/* Selector de casas */}
                       <label className="block text-sm font-medium text-gray-700 mb-1">Selecciona una casa:</label>
                       <select
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-sm"
+                        className="w-full border rounded-lg px-3 py-2 text-sm mb-2"
                         value={selectedHouseId}
                         onChange={e => handleSelectHouseAndGetToken(e.target.value)}
-                        disabled={isLoading}
                       >
                         <option value="" disabled>Elige una casa...</option>
-                        {houses.map((house) => (
-                            <option key={house.houseId} value={house.houseId}>
-                              {house.address ? `${house.address}` : house.houseId}
-                              {house.cups ? ` · ${house.cups}` : ''}
-                            </option>
+                        {houses.map(h => (
+                          <option key={h.houseId} value={h.houseId}>{h.address || h.houseId}</option>
                         ))}
                       </select>
+                      {/* 2. Estado de la casa debajo del selector */}
                       {selectedHouseId && houseDetails[selectedHouseId] && (
-                        <div className="mt-4">
-                          <div className="flex flex-col items-center w-full mb-1 px-2">
-                            <div className="flex items-center justify-center w-full gap-2">
-                              <span className="text-sm font-medium text-gray-600 text-center">Estado de la casa</span>
-                              <div className="flex-shrink-0">
-                                <HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyInfoIcon />
-                              </div>
+                        <div className="flex justify-center mt-3 mb-2">
+                          <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-4 py-2 flex flex-col items-center w-full max-w-md">
+                            <div className="flex items-center justify-center w-full mb-1 gap-2">
+                              <span className="text-xs font-semibold text-gray-700 text-center">Estado de la casa</span>
+                              <span className=""><HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyInfoIcon /></span>
                             </div>
-                          </div>
-                          <div className="flex items-center justify-center w-full mt-4">
-                            <HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyIcons />
+                            <div className="flex justify-center w-full mt-1">
+                              <HouseStatusIcons houseDetail={houseDetails[selectedHouseId]} onlyIcons />
+                            </div>
                           </div>
                         </div>
                       )}
                     </div>
                   )}
-                  {error && (
-                    <div className="text-red-500 text-sm mt-2 bg-red-50 p-2 rounded border border-red-100">
-                      {error}
-                    </div>
-                  )}
                 </div>
               </div>
-                  {Object.entries(groupedModules).map(([cat, mods]) => {
-                    const privateMods = Array.isArray(mods) ? mods.filter(m => m.auth) : [];
-                    if (privateMods.length === 0) return null;
-                    return (
-                      <div key={cat} className="mb-2 border rounded-lg">
-                        <button
-                          className={`flex items-center w-full px-3 py-2 text-sm font-semibold gap-2 ${categoryInfo[cat]?.border || ''} ${categoryInfo[cat]?.iconBg || ''} rounded-t-lg focus:outline-none select-none`}
-                          style={{ background: openCategories[cat] ? '#f8fafc' : '#fff' }}
-                          onClick={() => setOpenCategories(open => ({ ...open, [cat]: !open[cat] }))}
-                        >
-                          <span className={`w-6 h-6 flex items-center justify-center rounded-full ${categoryInfo[cat]?.iconBg}`}>{categoryInfo[cat]?.icon}</span>
-                          <span className="flex-1 text-left">{cat} ({privateMods.length})</span>
-                          <svg className={`transition-transform ${openCategories[cat] ? 'rotate-90' : ''}`} width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        </button>
-                        {openCategories[cat] && (
-                          <div className="p-1 space-y-1 bg-white rounded-b-lg">
-                            {privateMods.map(module => {
-                              const attrs = extractAttrs(module.htmlTag);
-                              const showCustom = customAttrs[module.id]?.show || false;
-                              return (
-                                <div
-                                  key={module.id}
-                              className={`relative bg-white rounded-lg border border-gray-100 shadow-sm p-2 group flex flex-col gap-1 ${!token ? 'opacity-50 pointer-events-none select-none' : 'cursor-grab hover:shadow-md transition-shadow'}`}
-                              draggable={!!token}
-                              onDragStart={token ? (e => handleDragStart(e, module)) : undefined}
-                                  style={{ marginBottom: 4 }}
-                                >
-                                  <div className="flex items-center justify-between w-full gap-2">
-                                    <div className="flex-1 min-w-0">
-                                      <h4 className="font-medium text-gray-900 text-xs truncate flex items-center gap-1">{module.name} <Tooltip text={module.description} /></h4>
-                                    </div>
-                                {token && (
-                                    <button
-                                      className="text-xs text-blue-600 hover:bg-blue-50 border border-blue-100 rounded px-2 py-1 font-medium whitespace-nowrap ml-2"
-                                      onClick={e => {
-                                        e.stopPropagation();
-                                        setCustomAttrs(prev => ({
-                                          ...prev,
-                                          [module.id]: { ...prev[module.id], show: !showCustom }
-                                        }));
-                                      }}
-                                      type="button"
-                                    >
-                                      {showCustom ? 'Ocultar' : 'Personalizar'}
-                                    </button>
-                                )}
-                                  </div>
-                              {token && showCustom && (
-                                    <div className="mt-2 space-y-2">
-                                  {Object.entries(attrs).map(([attr, val]) => {
-                                    // Determinar el tipo de input basado en el atributo y su valor
-                                    const isBoolean = val === 'true' || val === 'false';
-                                    const isEnergyPricesType = attr === 'data-energy-prices-type';
-                                    const isLanguage = attr === 'data-language';
-                                    const isUnit = attr === 'data-unit';
-                                    
-                                    return (
-                                      <div key={attr} className="flex flex-col gap-1">
-                                        <label className="text-xs text-gray-500 flex items-center gap-1">
-                                          {attr.replace('data-', '').replace(/-/g, ' ')}
-                                          <Tooltip text={`Valor actual: ${String(val)}`} />
-                                        </label>
-                                        
-                                        {isBoolean ? (
-                                          <div className="flex items-center gap-2">
-                                            <input
-                                              type="checkbox"
-                                              checked={customAttrs[module.id]?.[attr] === 'true' || (!customAttrs[module.id]?.[attr] && val === 'true')}
-                                              onChange={e => {
-                                                setCustomAttrs(prev => ({
-                                                  ...prev,
-                                                  [module.id]: { ...prev[module.id], [attr]: e.target.checked ? 'true' : 'false' }
-                                                }));
-                                              }}
-                                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                            />
-                                            <span className="text-xs text-gray-600">Activar</span>
-                                          </div>
-                                        ) : isEnergyPricesType ? (
-                                          <select
-                                            value={customAttrs[module.id]?.[attr] || val}
-                                            onChange={e => {
-                                              setCustomAttrs(prev => ({
-                                                ...prev,
-                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                              }));
-                                            }}
-                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
-                                          >
-                                            <option value="PVPC">PVPC</option>
-                                            <option value="OMIE">OMIE</option>
-                                          </select>
-                                        ) : isLanguage ? (
-                                          <select
-                                            value={customAttrs[module.id]?.[attr] || val || ''}
-                                            onChange={e => {
-                                              setCustomAttrs(prev => ({
-                                                ...prev,
-                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                              }));
-                                            }}
-                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
-                                          >
-                                            <option value="" disabled>Elige idioma...</option>
-                                            <option value="es-ES">es-ES</option>
-                                            <option value="ca-ES">ca-ES</option>
-                                            <option value="gl-ES">gl-ES</option>
-                                          </select>
-                                        ) : isUnit ? (
-                                          <select
-                                            value={customAttrs[module.id]?.[attr] || val || ''}
-                                            onChange={e => {
-                                              setCustomAttrs(prev => ({
-                                                ...prev,
-                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                              }));
-                                            }}
-                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
-                                          >
-                                            <option value="ENERGY">ENERGY</option>
-                                            <option value="CURRENCY">CURRENCY</option>
-                                          </select>
-                                        ) : (
-                                          <input
-                                            type="text"
-                                            value={String(customAttrs[module.id]?.[attr] || val)}
-                                            onChange={e => {
-                                              setCustomAttrs(prev => ({
-                                                ...prev,
-                                                [module.id]: { ...prev[module.id], [attr]: e.target.value }
-                                              }));
-                                            }}
-                                            className="w-full text-xs border rounded-lg px-2 py-1 bg-gray-50"
-                                            placeholder={String(val)}
-                                          />
-                                        )}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
             </div>
           </details>
         </div>

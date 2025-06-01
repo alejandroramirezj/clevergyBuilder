@@ -81,9 +81,23 @@ const ApiConsole: React.FC = () => {
           logs.map(log => {
             // Detectar si es la petición GET house-detail
             let logId = undefined;
-            const match = log.method === 'GET' && log.url.match(/\/houses\/([\w-]+)\/house-detail/);
-            if (match) {
-              logId = `api-get-house-details-${match[1]}`;
+            // GET /users? (buscar userId)
+            if (log.method === 'GET' && /\/users\?/.test(log.url)) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const resp = log.response as any;
+              if (resp && resp.elements && resp.elements[0]?.id) {
+                logId = `api-get-userid-${resp.elements[0].id}`;
+              }
+            }
+            // GET /users/{userId}/supplies (casas)
+            else if (log.method === 'GET' && /\/users\/.+\/supplies/.test(log.url)) {
+              const uid = log.url.match(/\/users\/([\w-]+)\/supplies/);
+              if (uid) logId = `api-get-houses-${uid[1]}`;
+            }
+            // GET /houses/{houseId}/house-detail
+            else if (log.method === 'GET' && /\/houses\/.+\/house-detail/.test(log.url)) {
+              const hid = log.url.match(/\/houses\/([\w-]+)\/house-detail/);
+              if (hid) logId = `api-get-house-details-${hid[1]}`;
             }
             return (
               <div
