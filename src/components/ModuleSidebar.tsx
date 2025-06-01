@@ -332,6 +332,14 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   // Estado para mostrar el input de edición de emoji
   const [editingEmoji, setEditingEmoji] = useState(false);
   const [houseDetails, setHouseDetails] = useState<Record<string, HouseDetail>>({});
+  const [showWelcome, setShowWelcome] = useState(() => {
+    // Persistencia en localStorage para no mostrarlo siempre
+    try {
+      return localStorage.getItem('clevergy-hide-welcome') !== '1';
+    } catch {
+      return true;
+    }
+  });
 
   // Ejemplo de definición de módulos con categoría
   const allModules = [
@@ -1137,6 +1145,29 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
   return (
     <div className="w-96 h-screen bg-white border-r border-gray-200 flex flex-col">
       <div className="flex-1 overflow-y-auto p-4">
+        {/* Banner de bienvenida */}
+        {showWelcome && (
+          <div className="mb-5 bg-gradient-to-br from-blue-50 to-teal-50 border border-blue-100 rounded-xl shadow flex flex-col gap-2 p-4 relative animate-fade-in">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-lg"
+              onClick={() => {
+                setShowWelcome(false);
+                try { localStorage.setItem('clevergy-hide-welcome', '1'); } catch {/* vacío */}
+              }}
+              aria-label="Cerrar bienvenida"
+            >✕</button>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-2xl">✨</span>
+              <span className="font-bold text-base text-teal-800">¡Bienvenido/a al Builder de Clevergy!</span>
+            </div>
+            <ol className="list-decimal list-inside text-sm text-gray-700 pl-2 space-y-1">
+              <li><b>Arrastra módulos</b> desde <span className="bg-blue-100 text-blue-700 rounded px-1">Sin autenticación</span> o <span className="bg-green-100 text-green-700 rounded px-1">Con autenticación</span> al área central.</li>
+              <li><b>Personaliza tu apariencia</b> en la sección destacada arriba.</li>
+              <li><b>Visualiza y copia el código</b> generado y revisa las peticiones API en la consola.</li>
+            </ol>
+            <div className="text-xs text-gray-500 mt-2">Tip: Los módulos <b>Sin autenticación</b> funcionan directamente. Los de <b>Con autenticación</b> requieren tu API Key y seleccionar una casa.</div>
+          </div>
+        )}
         {/* 2. Personaliza tu apariencia */}
         <div className="mb-6">
       <div className="p-4 border-b border-gray-100 relative">
