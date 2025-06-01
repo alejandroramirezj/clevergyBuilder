@@ -1971,7 +1971,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                             </div>
                           </ShadTooltipTrigger>
                           <ShadTooltipContent className="max-w-xs">
-                            <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                            <div className="mb-2 text-xs text-gray-700 font-semibold">¿Qué es el userId?</div>
+                            <div className="text-xs text-gray-600 mb-2">Es el identificador único del usuario en Clevergy. Se obtiene a partir del email y es necesario para solicitar el token y acceder a sus datos.</div>
                             <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
                               <MethodBadge method="GET" />
                               <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users?email={email}</span>
@@ -1995,7 +1996,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                             </div>
                           </ShadTooltipTrigger>
                           <ShadTooltipContent className="max-w-xs">
-                            <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                            <div className="mb-2 text-xs text-gray-700 font-semibold">¿Qué es el token?</div>
+                            <div className="text-xs text-gray-600 mb-2">El token es una clave temporal que permite acceder a los datos del usuario de forma segura. Es necesario para consultar las casas y los módulos privados.</div>
                             <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
                               <MethodBadge method="GET" />
                               <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/auth/{userIdStep.userId}/token</span>
@@ -2023,7 +2025,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                             </div>
                           </ShadTooltipTrigger>
                           <ShadTooltipContent className="max-w-xs">
-                            <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                            <div className="mb-2 text-xs text-gray-700 font-semibold">¿Qué son las casas?</div>
+                            <div className="text-xs text-gray-600 mb-2">Son los suministros o viviendas asociadas al usuario. Selecciona una para ver y personalizar los módulos con datos reales.</div>
                             <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
                               <MethodBadge method="GET" />
                               <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/users/{userIdStep.userId}/supplies</span>
@@ -2047,7 +2050,8 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
                             </div>
                           </ShadTooltipTrigger>
                           <ShadTooltipContent className="max-w-xs">
-                            <div className="mb-2 text-xs text-gray-700">Llamada a la API:</div>
+                            <div className="mb-2 text-xs text-gray-700 font-semibold">¿Qué son los detalles?</div>
+                            <div className="text-xs text-gray-600 mb-2">Aquí puedes ver información detallada de la casa seleccionada, como dirección, CUPS, integraciones y estado de los datos energéticos.</div>
                             <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1 mb-2">
                               <MethodBadge method="GET" />
                               <span className="font-mono text-xs text-gray-800">https://connect.clever.gy/houses/{selectedHouseId}/house-detail</span>
