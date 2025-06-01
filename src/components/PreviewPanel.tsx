@@ -200,7 +200,12 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
           </div>
           <button
             className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${showCode ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
-            onClick={() => setShowCode(v => !v)}
+            onClick={() => {
+              setShowCode(v => !v);
+              if (typeof window !== 'undefined' && window.completeOnboardingVisualizeStep) {
+                window.completeOnboardingVisualizeStep();
+              }
+            }}
             title={showCode ? 'Ocultar código' : 'Ver código HTML'}
           >
             <Code size={16} />

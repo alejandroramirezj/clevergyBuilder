@@ -5,12 +5,20 @@ import ReactDOM from 'react-dom';
 import { useApiConsole } from './ApiConsoleContext';
 import HouseStatusIcons from './HouseStatusIcons';
 import { House, HouseDetail } from '@/types/house';
+import confetti from 'canvas-confetti';
 import {
   Tooltip as ShadTooltip,
   TooltipContent as ShadTooltipContent,
   TooltipProvider as ShadTooltipProvider,
   TooltipTrigger as ShadTooltipTrigger,
 } from "@/components/ui/tooltip";
+
+// Justo al inicio del archivo, después de los imports
+declare global {
+  interface Window {
+    completeOnboardingVisualizeStep?: () => void;
+  }
+}
 
 // Estado para estilos globales
 const defaultStyles = {
@@ -339,6 +347,12 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     } catch {
       return true;
     }
+  });
+  // Estado para el stepper de bienvenida
+  const [welcomeSteps, setWelcomeSteps] = useState({
+    dragModule: false,
+    customize: false,
+    visualize: false
   });
 
   // Ejemplo de definición de módulos con categoría
@@ -733,6 +747,15 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     return htmlTag;
   }
 
+  // Función para actualizar el estado del stepper
+  const updateWelcomeStep = (step) => {
+    setWelcomeSteps(prev => ({
+      ...prev,
+      [step]: true
+    }));
+  };
+
+  // Modificar handleDragStart para actualizar el primer paso
   const handleDragStart = (e, module) => {
     let htmlTag = module.htmlTag;
     const attrs = extractAttrs(htmlTag);
@@ -745,11 +768,20 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
         );
       }
     });
-    // Añadir comentarios bonitos y sencillos
     htmlTag = addCommentsToHtmlTag(htmlTag, houseId, token);
-    // Al arrastrar, el objeto debe tener el htmlTag actualizado
     const moduleWithCustom = { ...module, htmlTag };
     e.dataTransfer.setData('application/json', JSON.stringify(moduleWithCustom));
+    e.dataTransfer.effectAllowed = 'move';
+    
+    // Si es el módulo de precios de energía, lanzar confeti y actualizar el paso
+    if (module.id === 'energy-prices') {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      updateWelcomeStep('dragModule');
+    }
   };
 
   const categoryInfo = {
@@ -803,12 +835,22 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     setTimeout(() => setFeedback(''), 1200);
   };
 
-  // Función para cargar un estilo guardado
+  // Modificar handleLoadStyle para actualizar el segundo paso
   const handleLoadStyle = (vars, emoji) => {
-    setStylesVars({ ...vars });
-    setEmoji(emoji || "");
+    setStylesVars(vars);
+    setStyleName('');
+    setEmoji(emoji || getRandomEmoji());
+    setShowStyles(false);
     setFeedback('¡Estilo cargado!');
     setTimeout(() => setFeedback(''), 1200);
+    
+    // Lanzar confeti al cambiar el tema y actualizar el paso
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+    updateWelcomeStep('customize');
   };
 
   // Función para eliminar un estilo guardado
@@ -1142,6 +1184,54 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
     }
   }
 
+  // Efecto para detectar cuando se visualiza el código
+  useEffect(() => {
+    const checkCodeVisibility = () => {
+      const codeElement = document.querySelector('.code-preview');
+      if (codeElement && (codeElement as HTMLElement).offsetParent !== null) {
+        updateWelcomeStep('visualize');
+      }
+    };
+
+    // Observar cambios en el DOM
+    const observer = new MutationObserver(checkCodeVisibility);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Verificar inicialmente
+    checkCodeVisibility();
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Exponer función global para marcar el paso 'Visualiza'
+  useEffect(() => {
+    window.completeOnboardingVisualizeStep = () => {
+      setWelcomeSteps(prev => {
+        if (!prev.visualize) {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+        return { ...prev, visualize: true };
+      });
+    };
+    return () => { delete window.completeOnboardingVisualizeStep; };
+  }, []);
+
+  // Efecto para detectar cuando se completan todos los pasos
+  useEffect(() => {
+    if (welcomeSteps.dragModule && welcomeSteps.customize && welcomeSteps.visualize) {
+      // Esperar 2 segundos antes de ocultar el mensaje
+      const timer = setTimeout(() => {
+        setShowWelcome(false);
+        try { localStorage.setItem('clevergy-hide-welcome', '1'); } catch {/* vacío */}
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [welcomeSteps]);
+
   return (
     <div className="w-96 h-screen bg-white border-r border-gray-200 flex flex-col">
       <div className="flex-1 overflow-y-auto p-4">
@@ -1160,12 +1250,53 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
               <span className="text-2xl">✨</span>
               <span className="font-bold text-base text-teal-800">¡Bienvenido/a al Builder de Clevergy!</span>
             </div>
+            {/* Stepper visual compacto y centrado, un poco más grande */}
+            <div className="flex items-center justify-center w-full mb-3">
+              <div className="flex items-center justify-center w-full max-w-xs gap-3 mx-auto">
+                {/* Paso 1 */}
+                <div className="flex flex-col items-center w-16">
+                  <div
+                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all duration-300 ${welcomeSteps.dragModule ? 'bg-[var(--clevergy-color-primary)] border-[var(--clevergy-color-primary)] text-white' : 'bg-white border-[var(--clevergy-color-primary)] text-[var(--clevergy-color-primary)]'}`}
+                  >
+                    {welcomeSteps.dragModule ? '✓' : '1'}
+                  </div>
+                  <span
+                    className={`block text-center mt-1 text-xs font-medium transition-all duration-300 ${welcomeSteps.dragModule ? 'text-[var(--clevergy-color-primary)]' : 'text-gray-400'}`}
+                  >Arrastra</span>
+                </div>
+                {/* Línea */}
+                <div className={`h-0.5 w-8 rounded ${welcomeSteps.dragModule ? 'bg-[var(--clevergy-color-primary)]' : 'bg-gray-200'} transition-all duration-300`}></div>
+                {/* Paso 2 */}
+                <div className="flex flex-col items-center w-16">
+                  <div
+                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all duration-300 ${welcomeSteps.customize ? 'bg-[var(--clevergy-color-primary)] border-[var(--clevergy-color-primary)] text-white' : 'bg-white border-[var(--clevergy-color-primary)] text-[var(--clevergy-color-primary)]'}`}
+                  >
+                    {welcomeSteps.customize ? '✓' : '2'}
+                  </div>
+                  <span
+                    className={`block text-center mt-1 text-xs font-medium transition-all duration-300 ${welcomeSteps.customize ? 'text-[var(--clevergy-color-primary)]' : 'text-gray-400'}`}
+                  >Personaliza</span>
+                </div>
+                {/* Línea */}
+                <div className={`h-0.5 w-8 rounded ${welcomeSteps.customize ? 'bg-[var(--clevergy-color-primary)]' : 'bg-gray-200'} transition-all duration-300`}></div>
+                {/* Paso 3 */}
+                <div className="flex flex-col items-center w-16">
+                  <div
+                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all duration-300 ${welcomeSteps.visualize ? 'bg-[var(--clevergy-color-primary)] border-[var(--clevergy-color-primary)] text-white' : 'bg-white border-[var(--clevergy-color-primary)] text-[var(--clevergy-color-primary)]'}`}
+                  >
+                    {welcomeSteps.visualize ? '✓' : '3'}
+                  </div>
+                  <span
+                    className={`block text-center mt-1 text-xs font-medium transition-all duration-300 ${welcomeSteps.visualize ? 'text-[var(--clevergy-color-primary)]' : 'text-gray-400'}`}
+                  >Visualiza</span>
+                </div>
+              </div>
+            </div>
             <ol className="list-decimal list-inside text-sm text-gray-700 pl-2 space-y-1">
-              <li><b>Arrastra módulos</b> desde <span className="bg-blue-100 text-blue-700 rounded px-1">Sin autenticación</span> o <span className="bg-green-100 text-green-700 rounded px-1">Con autenticación</span> al área central.</li>
+              <li><b>Arrastra el módulo de precios de energía</b> desde <span className="bg-blue-100 text-blue-700 rounded px-1">Sin autenticación</span> al área central.</li>
               <li><b>Personaliza tu apariencia</b> en la sección destacada arriba.</li>
               <li><b>Visualiza y copia el código</b> generado y revisa las peticiones API en la consola.</li>
             </ol>
-            <div className="text-xs text-gray-500 mt-2">Tip: Los módulos <b>Sin autenticación</b> funcionan directamente. Los de <b>Con autenticación</b> requieren tu API Key y seleccionar una casa.</div>
           </div>
         )}
         {/* 2. Personaliza tu apariencia */}
