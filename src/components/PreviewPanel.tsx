@@ -105,7 +105,31 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
   </body>
 </html>`
     .replace(/(<clevergy-energy-prices[^>]*>)/g, '<!-- Módulo: Precios de energía -->\n$1')
-    .replace(/(<clevergy-create-contract-opportunity[^>]*>)/g, '<!-- Módulo: Contrato -->\n$1');
+    .replace(/(<clevergy-create-contract-opportunity[^>]*>)/g, '<!-- Módulo: Contrato -->\n$1')
+    .replace(/(<clevergy-integration-shelly[^>]*>)/g, '<!-- Módulo: Integración Shelly -->\n$1')
+    .replace(/(<clevergy-smart-devices[^>]*>)/g, '<!-- Módulo: Dispositivos inteligentes -->\n$1')
+    .replace(/(<clevergy-smart-devices-settings[^>]*>)/g, '<!-- Módulo: Ajustes de dispositivos inteligentes -->\n$1')
+    .replace(/(<clevergy-alerts-settings[^>]*>)/g, '<!-- Módulo: Ajustes de avisos -->\n$1')
+    .replace(/(<clevergy-battery[^>]*>)/g, '<!-- Módulo: Batería -->\n$1')
+    .replace(/(<clevergy-breakdown[^>]*>)/g, '<!-- Módulo: Desglose de consumo -->\n$1')
+    .replace(/(<clevergy-consumption-cumulative[^>]*>)/g, '<!-- Módulo: Consumo acumulado -->\n$1')
+    .replace(/(<clevergy-energy-chart[^>]*>)/g, '<!-- Módulo: Gráfico de energía -->\n$1')
+    .replace(/(<clevergy-house-comparison[^>]*>)/g, '<!-- Módulo: Comparativa de hogares -->\n$1')
+    .replace(/(<clevergy-house-contract[^>]*>)/g, '<!-- Módulo: Contrato del hogar -->\n$1')
+    .replace(/(<clevergy-house-settings[^>]*>)/g, '<!-- Módulo: Configuración del hogar -->\n$1')
+    .replace(/(<clevergy-integration-fronius-b2c[^>]*>)/g, '<!-- Módulo: Integración Fronius B2C -->\n$1')
+    .replace(/(<clevergy-integration-huawei-b2c[^>]*>)/g, '<!-- Módulo: Integración Huawei B2C -->\n$1')
+    .replace(/(<clevergy-invoice-viewer[^>]*>)/g, '<!-- Módulo: Visor de facturas -->\n$1')
+    .replace(/(<clevergy-power-chart[^>]*>)/g, '<!-- Módulo: Gráfico de potencia -->\n$1')
+    .replace(/(<clevergy-rate-recommender[^>]*>)/g, '<!-- Módulo: Recomendador de tarifa -->\n$1')
+    .replace(/(<clevergy-recommendations[^>]*>)/g, '<!-- Módulo: Recomendaciones -->\n$1')
+    .replace(/(<clevergy-solar-amortization[^>]*>)/g, '<!-- Módulo: Amortización solar -->\n$1')
+    .replace(/(<clevergy-solar-info[^>]*>)/g, '<!-- Módulo: Información solar -->\n$1')
+    .replace(/(<clevergy-solar-real-time[^>]*>)/g, '<!-- Módulo: Solar en tiempo real -->\n$1')
+    .replace(/(<clevergy-solar-recommender[^>]*>)/g, '<!-- Módulo: Recomendador solar -->\n$1')
+    .replace(/(<clevergy-solar-summary[^>]*>)/g, '<!-- Módulo: Resumen solar -->\n$1')
+    .replace(/(<clevergy-tips-panel[^>]*>)/g, '<!-- Módulo: Panel de consejos -->\n$1')
+    .replace(/(<clevergy-virtual-wallet[^>]*>)/g, '<!-- Módulo: Monedero virtual -->\n$1');
 
   // Formatea los atributos de los módulos para que cada uno vaya en una línea separada (solo en el bloque de código mostrado)
   function formatModuleAttributes(html) {
