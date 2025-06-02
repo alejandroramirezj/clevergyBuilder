@@ -93,9 +93,8 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Preview</title>
-    <!-- Script -->
+    <!-- Script de clevergy -->
     <script type="module" src="https://assets.clever.gy/clevergy-modules.js"></script>
-    <!-- Estilos -->
     <style>
       ${clevergyVarsBlock}
     </style>
@@ -110,7 +109,8 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
 
   // Formatea los atributos de los módulos para que cada uno vaya en una línea separada (solo en el bloque de código mostrado)
   function formatModuleAttributes(html) {
-    return html.replace(/(<(clevergy-[\w-]+))([^>]*)(>)/g, (match, start, tag, attrs, end) => {
+    // Primero, formatea los atributos como antes
+    let formatted = html.replace(/(<(clevergy-[\w-]+))([^>]*)(>)/g, (match, start, tag, attrs, end) => {
       if (!attrs.trim()) return match;
       // Quita saltos de línea y espacios extra entre atributos
       const formattedAttrs = attrs.trim()
@@ -118,6 +118,13 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
         .replace(/\s([a-zA-Z0-9-:]+)=/g, '\n$1=');
       return `${start}\n${formattedAttrs}\n${end}`;
     });
+    // Reemplaza todos los autocierres <clevergy-xxx ... /> por <clevergy-xxx ...></clevergy-xxx> (soporta saltos de línea y espacios antes del / >)
+    formatted = formatted.replace(/(<(clevergy-[\w-]+)([\s\S]*?))\s*\/>(?!<)/g, (match, start, tag, attrs) => {
+      return `${start}${attrs}></${tag}>`;
+    });
+    // Elimina saltos de línea extra antes de '>' si no hay atributos
+    formatted = formatted.replace(/(<clevergy-[\w-]+)\s*\n(>)/g, '$1$2');
+    return formatted;
   }
 
   // Aplica el formateo de atributos solo al bloque de código mostrado

@@ -377,7 +377,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Precios de energía en tiempo real',
       auth: false,
       category: 'Energía',
-      htmlTag: '<clevergy-energy-prices\n    data-energy-prices-type="PVPC"\n    data-language="es"\n    data-show-energy-price-list="true"\n    data-show-energy-price-surplus="false"\n  />'
+      htmlTag: '<clevergy-energy-prices\n    data-energy-prices-type="PVPC"\n    data-language="es"\n    data-show-energy-price-list="true"\n    data-show-energy-price-surplus="false"\n></clevergy-energy-prices>'
     },
     {
       id: 'contract',
@@ -422,13 +422,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Configura tus avisos',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-alerts-settings
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-title="Configura tus avisos"
-        data-unit="ENERGY"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-alerts-settings\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-title="Configura tus avisos"\n        data-unit="ENERGY"\n        data-language="es-ES"\n></clevergy-alerts-settings>`
     },
     {
       id: 'battery',
@@ -437,12 +431,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Batería',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-battery
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-cups=""
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-battery\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-cups=""\n        data-language="es-ES"\n></clevergy-battery>`
     },
     {
       id: 'breakdown',
@@ -451,16 +440,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Desglose de consumo',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-breakdown
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-show-dates-selector="true"
-        data-date-range-type=""
-        data-custom-start-date=""
-        data-custom-end-date=""
-        data-unit="ENERGY"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-breakdown\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-show-dates-selector="true"\n        data-date-range-type=""\n        data-custom-start-date=""\n        data-custom-end-date=""\n        data-unit="ENERGY"\n        data-language="es-ES"\n></clevergy-breakdown>`
     },
     {
       id: 'consumption-cumulative',
@@ -469,13 +449,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Consumo acumulado',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-consumption-cumulative
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-tooltip="This is a tooltip"
-        data-unit="ENERGY"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-consumption-cumulative\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-tooltip="This is a tooltip"\n        data-unit="ENERGY"\n        data-language="es-ES"\n></clevergy-consumption-cumulative>`
     },
     {
       id: 'energy-chart',
@@ -484,18 +458,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Gráfico de energía',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-energy-chart
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-show-dates-selector="true"
-        data-date-range-type="month"
-        data-date-range-current-date="2024-03-01"
-        data-custom-start-date=""
-        data-custom-end-date=""
-        data-language="es-ES"
-        data-show-download-csv="true"
-        data-unit="ENERGY"
-      />`
+      htmlTag: `<clevergy-energy-chart\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-show-dates-selector="true"\n        data-date-range-type="month"\n        data-date-range-current-date="2024-03-01"\n        data-custom-start-date=""\n        data-custom-end-date=""\n        data-language="es-ES"\n        data-show-download-csv="true"\n        data-unit="ENERGY"\n></clevergy-energy-chart>`
     },
     {
       id: 'house-comparison',
@@ -504,16 +467,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Comparativa de hogares',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-house-comparison
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-view="race"
-        data-show-dates-selector="false"
-        data-dates-selector-position-="bottom"
-        data-variant="advanced"
-        data-tooltip="<p><strong>En esta sección puedes comparar el consumo de tu hogar con:</strong></p><ul><li><strong>Hogares cercanos:</strong> consumo medio de hogares con el mismo código postal que tú.</li><li><strong>Hogares similares:</strong> consumo medio de hogares con características similares según tu configuración de la cuenta.</li><li><strong>Hogares eficientes:</strong> consumo medio de hogares con características similares según tu configuración de la cuenta, teniendo en cuenta solo el 30% de los hogares con menor consumo.</li></ul>"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-house-comparison\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-view="race"\n        data-show-dates-selector="false"\n        data-dates-selector-position-="bottom"\n        data-variant="advanced"\n        data-tooltip="<p><strong>En esta sección puedes comparar el consumo de tu hogar con:</strong></p><ul><li><strong>Hogares cercanos:</strong> consumo medio de hogares con el mismo código postal que tú.</li><li><strong>Hogares similares:</strong> consumo medio de hogares con características similares según tu configuración de la cuenta.</li><li><strong>Hogares eficientes:</strong> consumo medio de hogares con características similares según tu configuración de la cuenta, teniendo en cuenta solo el 30% de los hogares con menor consumo.</li></ul>"\n        data-language="es-ES"\n></clevergy-house-comparison>`
     },
     {
       id: 'house-contract',
@@ -522,11 +476,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Contrato del hogar',
       auth: true,
       category: 'Comercializadora',
-      htmlTag: `<clevergy-house-contract
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-house-contract\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-language="es-ES"\n></clevergy-house-contract>`
     },
     {
       id: 'house-settings',
@@ -535,11 +485,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Configuración del hogar',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-house-settings
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-house-settings\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-language="es-ES"\n></clevergy-house-settings>`
     },
     {
       id: 'integration-fronius-b2c',
@@ -548,12 +494,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Integración Fronius B2C',
       auth: true,
       category: 'Integraciones',
-      htmlTag: `<clevergy-integration-fronius-b2c
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-allow-skipping="false"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-integration-fronius-b2c\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-allow-skipping="false"\n        data-language="es-ES"\n></clevergy-integration-fronius-b2c>`
     },
     {
       id: 'integration-huawei-b2c',
@@ -562,14 +503,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Integración Huawei B2C',
       auth: true,
       category: 'Integraciones',
-      htmlTag: `<clevergy-integration-huawei-b2c
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-callback-url=""
-        data-delegate-url-opening=""
-        data-allow-skipping=""
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-integration-huawei-b2c\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-callback-url=""\n        data-delegate-url-opening=""\n        data-allow-skipping=""\n        data-language="es-ES"\n></clevergy-integration-huawei-b2c>`
     },
     {
       id: 'invoice-viewer',
@@ -578,13 +512,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Visor de facturas',
       auth: true,
       category: 'Comercializadora',
-      htmlTag: `<clevergy-invoice-viewer
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-title="Factura explicada"
-        data-language="es-ES"
-        data-show-empty-state="false"
-      />`
+      htmlTag: `<clevergy-invoice-viewer\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-title="Factura explicada"\n        data-language="es-ES"\n        data-show-empty-state="false"\n></clevergy-invoice-viewer>`
     },
     {
       id: 'power-chart',
@@ -593,12 +521,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Gráfico de potencia',
       auth: true,
       category: 'Solar',
-      htmlTag: `<clevergy-power-chart
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-current-date="2024-03-01"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-power-chart\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-current-date="2024-03-01"\n        data-language="es-ES"\n></clevergy-power-chart>`
     },
     {
       id: 'rate-recommender',
@@ -607,12 +530,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Recomendador de tarifa',
       auth: true,
       category: 'Leads',
-      htmlTag: `<clevergy-rate-recommender
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-variant="default"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-rate-recommender\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-variant="default"\n        data-language="es-ES"\n></clevergy-rate-recommender>`
     },
     {
       id: 'recommendations',
@@ -621,12 +539,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Recomendaciones',
       auth: true,
       category: 'Leads',
-      htmlTag: `<clevergy-recommendations
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-title="Recomendaciones"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-recommendations\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-title="Recomendaciones"\n        data-language="es-ES"\n></clevergy-recommendations>`
     },
     {
       id: 'solar-amortization',
@@ -635,11 +548,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Amortización solar',
       auth: true,
       category: 'Solar',
-      htmlTag: `<clevergy-solar-amortization
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-solar-amortization\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-language="es-ES"\n></clevergy-solar-amortization>`
     },
     {
       id: 'solar-info',
@@ -648,11 +557,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Información solar',
       auth: true,
       category: 'Solar',
-      htmlTag: `<clevergy-solar-info
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-solar-info\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-language="es-ES"\n></clevergy-solar-info>`
     },
     {
       id: 'solar-real-time',
@@ -661,11 +566,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Solar en tiempo real',
       auth: true,
       category: 'Solar',
-      htmlTag: `<clevergy-solar-real-time
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-solar-real-time\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-language="es-ES"\n></clevergy-solar-real-time>`
     },
     {
       id: 'solar-recommender',
@@ -674,11 +575,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Recomendador solar',
       auth: true,
       category: 'Leads',
-      htmlTag: `<clevergy-solar-recommender
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-solar-recommender\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-language="es-ES"\n></clevergy-solar-recommender>`
     },
     {
       id: 'solar-summary',
@@ -687,14 +584,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Resumen solar',
       auth: true,
       category: 'Solar',
-      htmlTag: `<clevergy-solar-summary
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-show-dates-selector="true"
-        data-title="Resumen"
-        data-unit="ENERGY"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-solar-summary\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-show-dates-selector="true"\n        data-title="Resumen"\n        data-unit="ENERGY"\n        data-language="es-ES"\n></clevergy-solar-summary>`
     },
     {
       id: 'tips-panel',
@@ -703,11 +593,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Panel de consejos',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-tips-panel
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-tips-panel\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-language="es-ES"\n></clevergy-tips-panel>`
     },
     {
       id: 'virtual-wallet',
@@ -716,11 +602,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Monedero virtual',
       auth: true,
       category: 'Comercializadora',
-      htmlTag: `<clevergy-virtual-wallet
-        data-token="${token}"
-        data-house-id="${houseId}"
-        data-language="es-ES"
-      />`
+      htmlTag: `<clevergy-virtual-wallet\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-language="es-ES"\n></clevergy-virtual-wallet>`
     }
   ];
 
