@@ -95,6 +95,7 @@ const PreviewPanel = ({ modules, onModuleDrop, onModuleRemove, stylesVars }) => 
     <title>Preview</title>
     <!-- Script de clevergy -->
     <script type="module" src="https://assets.clever.gy/clevergy-modules.js"></script>
+    <!-- Estilos de clevergy -->
     <style>
       ${clevergyVarsBlock}
     </style>
