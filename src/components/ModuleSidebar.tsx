@@ -422,7 +422,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Configura tus avisos',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-alerts-settings\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-title="Configura tus avisos"\n        data-unit="ENERGY"\n        data-language="es-ES"\n></clevergy-alerts-settings>`
+      htmlTag: `<clevergy-alerts-settings\n        data-token=" 24{token}"\n        data-house-id=" 24{houseId}"\n        data-title="Configura tus avisos"\n        data-unit="ENERGY"\n        data-language="es-ES"\n        data-show-unit-selector="true"\n></clevergy-alerts-settings>`
     },
     {
       id: 'battery',
@@ -440,7 +440,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Desglose de consumo',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-breakdown\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-show-dates-selector="true"\n        data-date-range-type=""\n        data-custom-start-date=""\n        data-custom-end-date=""\n        data-unit="ENERGY"\n        data-language="es-ES"\n></clevergy-breakdown>`
+      htmlTag: `<clevergy-breakdown\n        data-token=" 24{token}"\n        data-house-id=" 24{houseId}"\n        data-show-dates-selector="true"\n        data-date-range-type=""\n        data-custom-start-date=""\n        data-custom-end-date=""\n        data-unit="ENERGY"\n        data-language="es-ES"\n        data-show-unit-selector="true"\n></clevergy-breakdown>`
     },
     {
       id: 'consumption-cumulative',
@@ -449,7 +449,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Consumo acumulado',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-consumption-cumulative\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-tooltip="This is a tooltip"\n        data-unit="ENERGY"\n        data-language="es-ES"\n></clevergy-consumption-cumulative>`
+      htmlTag: `<clevergy-consumption-cumulative\n        data-token=" 24{token}"\n        data-house-id=" 24{houseId}"\n        data-tooltip="This is a tooltip"\n        data-unit="ENERGY"\n        data-language="es-ES"\n        data-show-unit-selector="true"\n></clevergy-consumption-cumulative>`
     },
     {
       id: 'energy-chart',
@@ -458,7 +458,7 @@ const ModuleSidebar = ({ onModuleDrop, projectType, stylesVars, setStylesVars })
       description: 'Gráfico de energía',
       auth: true,
       category: 'Energía',
-      htmlTag: `<clevergy-energy-chart\n        data-token="${token}"\n        data-house-id="${houseId}"\n        data-show-dates-selector="true"\n        data-date-range-type="month"\n        data-date-range-current-date="2024-03-01"\n        data-custom-start-date=""\n        data-custom-end-date=""\n        data-language="es-ES"\n        data-show-download-csv="true"\n        data-unit="ENERGY"\n></clevergy-energy-chart>`
+      htmlTag: `<clevergy-energy-chart\n        data-token=" 24{token}"\n        data-house-id=" 24{houseId}"\n        data-show-dates-selector="true"\n        data-date-range-type="month"\n        data-date-range-current-date="2024-03-01"\n        data-custom-start-date=""\n        data-custom-end-date=""\n        data-language="es-ES"\n        data-show-download-csv="true"\n        data-unit="ENERGY"\n        data-show-unit-selector="true"\n></clevergy-energy-chart>`
     },
     {
       id: 'house-comparison',
